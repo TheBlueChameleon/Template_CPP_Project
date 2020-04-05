@@ -1,0 +1,280 @@
+/* TODO: File descrption
+ * 
+ */
+
+#ifndef GLOBALS_HPP
+#define GLOBALS_HPP
+
+// ========================================================================= //
+// dependencies
+
+// STL
+#include <stdexcept>
+
+#include <iostream>
+#include <sstream>
+
+#include <vector>
+#include <cctype>
+
+#include <random>
+#include <cstdlib>
+#include <ctime>
+
+#include <algorithm> 
+#include <numeric>
+#include <functional>
+
+#include <locale>
+
+// own
+
+// ========================================================================= //
+// generic
+
+constexpr double PI = std::atan(1.0)*4;
+
+void init(int argc = 0, char ** argv = nullptr);
+
+// ========================================================================= //
+// random number generator
+
+extern std::random_device RNG;
+extern std::uniform_real_distribution<> rand_phase_distribution;
+
+double get_randPhase();
+
+// ========================================================================= //
+// console output convenience
+
+enum class ConsoleColors {
+  FORE_BLACK,
+  FORE_RED,
+  FORE_GREEN,
+  FORE_BROWN,
+  FORE_BLUE,
+  FORE_PURPLE,
+  FORE_CYAN,
+  FORE_DARK_GREY,
+  FORE_NORMAL,
+  FORE_BRIGHT_GREY,
+  FORE_BRIGHT_RED,
+  FORE_BRIGHT_GREEN,
+  FORE_YELLOW,
+  FORE_BRIGHT_BLUE,
+  FORE_PINK,
+  FORE_BRIGHT_CYAN,
+  FORE_WHITE,
+  
+  BACK_BLACK,
+  BACK_RED,
+  BACK_GREEN,
+  BACK_BROWN,
+  BACK_BLUE,
+  BACK_PURPLE,
+  BACK_CYAN,
+  BACK_DARK_GREY,
+  BACK_NORMAL,
+  BACK_BRIGHT_GREY,
+  BACK_BRIGHT_RED,
+  BACK_BRIGHT_GREEN,
+  BACK_YELLOW,
+  BACK_BRIGHT_BLUE,
+  BACK_PINK,
+  BACK_BRIGHT_CYAN,
+  BACK_WHITE,
+  
+  SPC_NORMAL,
+  SPC_UNDERLINE_ON,
+  SPC_UNDERLINE_OFF,
+  SPC_ITALICS_ON,
+  SPC_ITALICS_OFF,
+  SPC_BLINK_ON,
+  SPC_BLINK_OFF,
+  SPC_BOLD_ON,
+  SPC_BOLD_OFF,
+};
+
+static inline void consoleClear()                   {std::cout << "\033[H\033[J";}
+static inline void consoleGotoRC(int row, int col)  {std::cout << "\033[" << row << ";" << col << "H";}
+
+void consoleSetcolor (ConsoleColors code);
+
+// ========================================================================= //
+// tools
+
+// ------------------------------------------------------------------------- //
+// String utility
+
+// ......................................................................... //
+// Trim String
+// Source:https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+
+// trim from start (in place)
+static inline void ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
+        return !std::isspace(ch);
+    }));
+}
+
+// trim from end (in place)
+static inline void rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
+        return !std::isspace(ch);
+    }).base(), s.end());
+}
+
+// trim from both ends (in place)
+static inline void trim(std::string &s) {ltrim(s); rtrim(s);}
+
+// trim from start (copying)
+static inline std::string ltrim_copy(std::string s) {ltrim(s); return s;}
+
+// trim from end (copying)
+static inline std::string rtrim_copy(std::string s) {rtrim(s); return s;}
+
+// trim from both ends (copying)
+static inline std::string trim_copy(std::string s) {trim(s); return s;}
+
+// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . //
+
+// adapted: remove all space characters (in place)
+static inline void fullTrim(std::string &s) {
+  auto begin = s.begin(),
+       end   = s.end();
+  
+  for (auto ch = begin; ch != end; ++ch) {
+    if (std::isspace(*ch)) {
+      s.erase(ch);
+      end = s.end();
+    }
+  }
+}
+
+// adapted: remove all space characters (copying)
+static inline std::string fullTrim_copy(std::string s) {fullTrim(s); return s;}
+
+// ......................................................................... //
+// case conversion
+
+static inline void     to_uppercase(std::string & s) {for (auto & c: s) {c = toupper(c);}          }
+static inline std::string uppercase(std::string   s) {for (auto & c: s) {c = toupper(c);} return s;}
+
+// ......................................................................... //
+// split string
+
+std::vector<std::string> splitString(const std::string & s, const char separator = ',');
+
+// ......................................................................... //
+// wildcard matching
+
+bool wildcardmatch(const char        * pattern, const char        * searchstring);
+bool wildcardmatch(const std::string & pattern, const std::string & searchstring);
+
+
+
+// ------------------------------------------------------------------------- //
+// vector utility
+
+// ......................................................................... //
+// concatenate vectors
+// https://stackoverflow.com/questions/3177241/what-is-the-best-way-to-concatenate-two-vectors
+
+template<class T>
+static inline std::vector<T> concatenate (std::vector<T> & A, std::vector<T> & B) {
+  std::vector<T> reVal;
+  
+  reVal.insert( reVal.end(), A.begin(), A.end() );
+  reVal.insert( reVal.end(), B.begin(), B.end() );
+  
+  return reVal;
+}
+
+template<class T>
+static inline void appendTo_vector (std::vector<T> & A, std::vector<T> & B) {
+  std::vector<T> reVal = std::vector<T>(A.size() + B.size());
+  
+  A.reserve( A.size() + B.size() );
+  A.insert ( A.end(), B.begin(), B.end() );
+}
+
+// ......................................................................... //
+// show lists of lists Py-Style
+
+template<class T> 
+static inline std::string vector_to_string(const std::vector<T> & list) {
+  std::stringstream reVal;
+  
+  if (list.size() == 0u) {return "[]";}
+  
+  reVal << "[";
+  for (auto & e : list) {
+    reVal << e << ",";
+  }
+  
+  // remove the last comma
+  reVal.seekp(-1, reVal.cur);
+  
+  reVal << "]";
+  
+  return reVal.str();
+}
+
+template<class T>
+static inline std::string vecvec_to_string(const std::vector<std::vector<T>> & listlist) {
+  std::stringstream reVal;
+  
+  if (listlist.size() == 0u) {return "[.]";}
+  
+  reVal << "[";
+  for   (auto & e : listlist) {
+    reVal << vector_to_string<T>(e) << ",";
+  }
+  
+  // remove the last comma
+  reVal.seekp(-1, reVal.cur);
+  
+  reVal << "]";
+  
+  return reVal.str();
+}
+
+// ......................................................................... //
+// vector distance
+
+template<class T>
+double vector_distance(const std::vector<T> & A, const std::vector<T> & B) {
+  auto l_add            = [] (const T a, const T b) {return a + b;};
+  auto l_delta_squared  = [] (const T a, const T b) {T tmp = a - b; return tmp * tmp;};
+  
+  if ( A.size() != B.size() ) return T();
+  
+  return std::sqrt(std::inner_product(A.begin(), A.end(), 
+                            B.begin(),
+                            0.0,
+                            l_add,
+                            l_delta_squared
+  ));
+}
+
+// ------------------------------------------------------------------------- //
+// misc
+
+std::vector<double> linspace(const double start, const double end, const int N);
+
+static inline double factorial (double n) {
+  // yields exact results up to n = 22
+  // reaches computation limit after n = 170 and will yield nan:inf beyond (nothrow)
+  // use at own risk above that
+  
+  if (n <   0) {throw std::invalid_argument("only positive arguments allowed.");}
+  
+  double reVal = 1.0;     // using doubles to keep up with the horrible range factorials can reach
+  for (auto i = 2.0; i < n+1; ++i) {reVal *= i;}
+  
+  return reVal;
+}
+
+
+std::string generateTimestamp();
+#endif

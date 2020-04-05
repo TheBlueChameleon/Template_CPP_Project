@@ -158,7 +158,7 @@ all:   intro generate extro
 new:   clean intro generate extro
 run:   intro generate extro execute
 grind: intro generate extro valgrind
-gitstart: gitinit gitadds gitsetmasterhint gitsetmaster
+gitstart: gitinit gitadds gitsetmaster
 
 # --------------------------------------------------------------------------- #
 # visual feedback
@@ -302,12 +302,6 @@ gitremove :
 	@echo "#=============================================================================#"
 	@echo ""
 # ........................................................................... #
-gitsetmasterhint :
-	@echo "type"
-	@echo "   $(COLOR_CYAN)make gitsetmaster$(COLOR_END)"
-	@echo "to finalize the process after adjusting the staging area."
-	@echo ""
-# ........................................................................... #
 gitsetmaster :
 	@git commit -m "initial commit"
 	@git push --set-upstream origin master
@@ -365,9 +359,7 @@ help :
 	@echo ""
 	@echo "$(COLOR_YELLOW)GIT targets$(COLOR_END)"
 	@echo "* $(COLOR_LCYAN)gitstart$(COLOR_END)"
-	@echo "   sets up the working directory for git and prepares an initial commit"
-	@echo "* $(COLOR_LCYAN)gitsetmaster$(COLOR_END)"
-	@echo "   sets the master branch and pushes the initial commit. $(COLOR_LRED)Run only once$(COLOR_END)"
+	@echo "   sets up the working directory for git and prepares an initial commit. $(COLOR_LRED)Run only once$(COLOR_END)"
 	@echo "* $(COLOR_LCYAN)gitadds$(COLOR_END)"
 	@echo "   adds files to the staging area."
 	@echo "* $(COLOR_LCYAN)gitremove$(COLOR_END)"

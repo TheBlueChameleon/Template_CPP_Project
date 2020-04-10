@@ -19,6 +19,11 @@
 #include "globals.hpp"
 
 // ========================================================================= //
+// local macros
+
+#define BOUNDARYCHECK(idx) {if (idx < 0 || static_cast<unsigned>(idx) >= keywords.size()) {throw std::invalid_argument("Index out of bounds.");}}
+
+// ========================================================================= //
 // static members
 
 const std::vector<std::string> Settings::representationsOfTrue = {"TRUE", "YES"};
@@ -30,9 +35,7 @@ Settings::Settings(std::vector<SettingsElementDescriptor> & dsc) {
   // ....................................................................... //
   // sanity checks
   
-  if ( dsc.empty() ) {
-    throw std::invalid_argument("Passed empty settings element descriptor.");
-  }
+  if ( dsc.empty() ) {throw std::invalid_argument("Passed empty settings element descriptor.");}
   
   std::sort(dsc.begin(), dsc.end(), 
             [] (const auto & a, const auto & b) {return a.keyword < b.keyword;}
@@ -108,6 +111,7 @@ void Settings::interpretValue(std::string & valueText, const int idx) {
     return;
   }
   
+  
   switch (valuesType[idx]) {
     case SettingsValueType::String :
       values[idx] = valueText;
@@ -143,7 +147,7 @@ void Settings::interpretValue(std::string & valueText, const int idx) {
     case SettingsValueType::Boolean :
       values[idx] = std::find(representationsOfTrue.begin(), representationsOfTrue.end(), 
                               uppercase(valueText)
-                              ) != representationsOfTrue.end();
+                             ) != representationsOfTrue.end();
       return;
       
       
@@ -216,8 +220,8 @@ void Settings::interpretValue(std::string & valueText, const int idx) {
 // ========================================================================= //
 // getters/setters
 
-char                             Settings::getCommentMarker() const         {return commentMarker;}
-void                             Settings::setCommentMarker(const char val) {commentMarker = val;}
+char                                    Settings::getCommentMarker() const         {return commentMarker;}
+void                                    Settings::setCommentMarker(const char val) {commentMarker = val;}
 // ......................................................................... //
 const std::vector<std::string>        & Settings::getKeywords  () const {return keywords  ;}
 const std::vector<std::any>           & Settings::getValues    () const {return values    ;}
@@ -228,6 +232,31 @@ int Settings::getIndex (const std::string & key) const {
   auto posIt = std::find(keywords.begin(), keywords.end(), uppercase(key) );
   return (posIt == keywords.end()) ? -1 : std::distance(keywords.begin(), posIt);
 }
+// ......................................................................... //
+bool Settings::hasValue (int idx) const {BOUNDARYCHECK(idx); return values[idx].has_value();}
+bool Settings::hasValue (const std::string & key) const {return hasValue( getIndex(key) );}
+// ......................................................................... //
+bool Settings::contains (int idx, int                 val) const {
+  auto list = std::any_cast< std::vector<int> >(values[idx]);
+  auto posIt = std::find(list.begin(), list.end(), val);
+  return posIt != list.end();
+}
+bool Settings::contains (int idx, double              val) const {
+  auto list = std::any_cast< std::vector<double> >(values[idx]);
+  auto posIt = std::find(list.begin(), list.end(), val);
+  return posIt != list.end();
+}
+bool Settings::contains (int idx, const std::string & val) const {
+  auto list = std::any_cast< std::vector<std::string> >(values[idx]);
+  auto posIt = std::find(list.begin(), list.end(), 
+                         valuesCaseSensitive[idx] ? val : uppercase(val)
+                        );
+  return posIt != list.end();
+}
+// ......................................................................... //
+bool Settings::contains (const std::string & key, int                 val) const {return contains( getIndex(key), val );}
+bool Settings::contains (const std::string & key, double              val) const {return contains( getIndex(key), val );}
+bool Settings::contains (const std::string & key, const std::string & val) const {return contains( getIndex(key), val );}
 
 // ========================================================================= //
 // I/O interface
@@ -236,9 +265,7 @@ void Settings::loadFile(const std::string & filename) {
   // ....................................................................... //
   // sanity checks
   
-  std::ifstream hFile(filename);
-  if (!hFile.is_open()) {throw std::runtime_error("Could not open file '" + filename + "'\n");}
-  
+  auto hFile = openThrow(filename, std::ios::in);
   
   // ....................................................................... //
   // parse file
@@ -256,7 +283,7 @@ void Settings::loadFile(const std::string & filename) {
     
     separationIdx = line.find('=');
     
-    key   = line.substr(0, separationIdx);
+    key = line.substr(0, separationIdx);
     to_uppercase(key);
     
     if (separationIdx != static_cast<signed>(std::string::npos))  {value = line.substr(separationIdx + 1);}
@@ -275,7 +302,7 @@ void Settings::loadFile(const std::string & filename) {
       foundInFile[idx] = true;
       
       if ( !valuesCaseSensitive[idx] ) {to_uppercase(value);}
-      if ( value != valuesText[idx]  ) {                            // check whethter default tag was read
+      if (  value != valuesText[idx] ) {                            // check whethter default tag was read
         interpretValue(value, idx);
         valuesText[idx] = value;
       }
@@ -297,7 +324,15 @@ void Settings::loadFile(const std::string & filename) {
   
 }
 // ......................................................................... //
-// void Settings::saveFile(const std::string & filename) const {}
+void Settings::saveFile(const std::string & filename) const {
+  auto hFile = openThrow(filename);
+  
+  for (auto i = 0u; i < keywords.size(); ++i) {
+    hFile << keywords[i] << " = " << valuesText[i] << std::endl;
+  }
+  
+  hFile.close();
+}
 // -----------------------------------------------------------------------.. //
 const std::string Settings::to_string() const {
   std::stringstream reVal;

@@ -56,13 +56,13 @@ struct SettingsElementDescriptor {
   template<typename T>
   void set( std::string key,
             const T &   val, 
-            std::string def           = "DEFAULT",
-            bool        caseSensitive = false
+            std::string def = "DEFAULT",
+            bool        cas = false
   ) {
     keyword       = key;
     value         = val;
     valueText     = def;
-    caseSensitive = caseSensitive;
+    caseSensitive = cas;
     
     if      ( std::is_same<bool,                              T>::value ) {valueType = SettingsValueType::Boolean    ;}
     else if ( std::is_integral<                               T>::value ) {valueType = SettingsValueType::Integer    ;}
@@ -77,9 +77,9 @@ struct SettingsElementDescriptor {
   template<typename T>
   void set( std::string                      key,
             const std::initializer_list<T> & list, 
-            std::string                      def           = "DEFAULT",
-            bool                             caseSensitive = false
-  ) {set(key, std::vector<T>(list), def, caseSensitive);}
+            std::string                      def = "DEFAULT",
+            bool                             cas = false
+  ) {set(key, std::vector<T>(list), def, cas);}
 };
 
 
@@ -110,7 +110,6 @@ private:
   
   std::vector<bool>               foundInFile;
   
-  
   // ----------------------------------------------------------------------- //
   // internal parsing machinery
   
@@ -120,7 +119,7 @@ public:
   // ----------------------------------------------------------------------- //
   // CTor, DTor
   
-  Settings() = default;
+  Settings()  = default;
   ~Settings() = default;
   
   Settings(std::vector<SettingsElementDescriptor> & dsc);
@@ -147,7 +146,16 @@ public:
   template<typename T>
   const T & getValue(const std::string & key) {return getValue<T>( getIndex(key) );}
   
+  bool hasValue (int idx) const;
+  bool hasValue (const std::string & key) const;
   
+  bool contains (int idx, int                 val) const;
+  bool contains (int idx, double              val) const;
+  bool contains (int idx, const std::string & val) const;
+  
+  bool contains (const std::string & key, int                 val) const;
+  bool contains (const std::string & key, double              val) const;
+  bool contains (const std::string & key, const std::string & val) const;
   
   // ----------------------------------------------------------------------- //
   // I/O interface

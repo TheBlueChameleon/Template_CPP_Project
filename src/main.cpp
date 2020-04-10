@@ -44,10 +44,9 @@ int main (int argc, char ** argv) {
   SED.keyword = "notInIni";                   // this will trigger a warning:
   vSED.push_back(SED);
   
-  SED.set("boolean1", true);
+  SED.set("boolean1", true, "YES", true);
   vSED.push_back(SED);
   SED.keyword = "boolean2";
-  SED.caseSensitive = false;
   vSED.push_back(SED);
   SED.keyword = "boolean3";
   vSED.push_back(SED);
@@ -73,6 +72,7 @@ int main (int argc, char ** argv) {
   vSED.push_back(SED);
   
   globalSettings = Settings(vSED);
+  globalSettings.saveFile("defaults.ini");
   init(argc, argv);
   
   std::cout << globalSettings.to_string();
@@ -89,7 +89,11 @@ int main (int argc, char ** argv) {
 //   std::cout << globalSettings.getIndex("BOOLEAN2") << std::endl;
 //   std::cout << globalSettings.getIndex("BOOLEAN7") << std::endl;
   
-  std::cout << globalSettings.getValue<bool>(0) << std::endl;
-  std::cout << globalSettings.getValue<bool>("boolean3") << std::endl;
-  std::cout << vector_to_string( globalSettings.getValue< std::vector<double> >("dbllist") ) << std::endl;
+//   std::cout << globalSettings.getValue<bool>(0) << std::endl;
+//   std::cout << globalSettings.getValue<bool>("boolean3") << std::endl;
+//   std::cout << vector_to_string( globalSettings.getValue< std::vector<double> >("dbllist") ) << std::endl;
+  
+  std::cout << globalSettings.contains("StrList", "maketxt") << std::endl;
+  std::cout << globalSettings.contains("StrList", "MAKETXT") << std::endl;
+  std::cout << globalSettings.contains("StrList", "not at all") << std::endl;
 }

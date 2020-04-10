@@ -276,12 +276,14 @@ double vector_distance(const std::vector<T> & A, const std::vector<T> & B) {
   
   if ( A.size() != B.size() ) return T();
   
-  return std::sqrt(std::inner_product(A.begin(), A.end(), 
-                            B.begin(),
-                            0.0,
-                            l_add,
-                            l_delta_squared
-  ));
+  return std::sqrt(
+    std::inner_product( A.begin(), A.end(), 
+                        B.begin(),
+                        0.0,
+                        l_add,
+                        l_delta_squared
+    )
+  );
 }
 
 // ========================================================================= //
@@ -289,8 +291,8 @@ double vector_distance(const std::vector<T> & A, const std::vector<T> & B) {
 
 std::string generateTimestamp();
 
-static inline std::fstream openThrow(const std::string & filename) {
-  auto reVal = std::fstream(filename, std::fstream::out);
+static inline std::fstream openThrow(const std::string & filename, std::ios_base::openmode mode = std::fstream::out) {
+  auto reVal = std::fstream(filename, mode);
   
   if ( !reVal.is_open() ) {
     throw( std::invalid_argument("failed to open '" + filename + "'") );

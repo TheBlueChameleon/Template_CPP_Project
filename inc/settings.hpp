@@ -66,7 +66,7 @@ private:
   // ----------------------------------------------------------------------- //
   // internal parsing machinery
   
-  bool interpretValue(std::string & valueText, const int idx);
+  void interpretValue(std::string & valueText, const int idx);
   
 public:
   // ----------------------------------------------------------------------- //

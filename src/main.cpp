@@ -42,6 +42,7 @@ int main (int argc, char ** argv) {
   
   SED.keyword = "double";
   SED.valueType = SettingsValueType::Double;
+  SED.value = 1.0;
   vSED.push_back(SED);
   
   SED.keyword = "notInIni";             // this will trigger a warning:
@@ -49,6 +50,7 @@ int main (int argc, char ** argv) {
   
   SED.keyword = "boolean1";
   SED.valueType = SettingsValueType::Boolean;
+  SED.value = true;
   vSED.push_back(SED);
   SED.keyword = "boolean2";
   vSED.push_back(SED);
@@ -63,18 +65,22 @@ int main (int argc, char ** argv) {
   
   SED.keyword = "strlist";
   SED.valueType = SettingsValueType::StringList;
+  SED.value = std::vector<std::string>({"Bela", "Farin", "Rod"});
+//   std::cout << SED.value.type().name() << std::endl;
   vSED.push_back(SED);
   
   SED.keyword = "intlist";
-  SED.valueType = SettingsValueType::StringList;
+  SED.valueType = SettingsValueType::IntegerList;
+  SED.value = std::vector<int>({1, 2, 3});
   vSED.push_back(SED);
   
   SED.keyword = "dbllist";
-  SED.valueType = SettingsValueType::StringList;
+  SED.valueType = SettingsValueType::DoubleList;
   vSED.push_back(SED);
   
   SED.keyword = "incomplete";           // this will trigger a warning: invalid type
   SED.valueType = SettingsValueType::Integer;
+  SED.value = 0;
   vSED.push_back(SED);
   
   globalSettings = Settings(vSED);

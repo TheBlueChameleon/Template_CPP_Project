@@ -1,4 +1,4 @@
- // ========================================================================= //
+// ========================================================================= //
 // dependencies
 
 // STL
@@ -94,32 +94,47 @@ Settings::Settings(std::vector<SettingsElementDescriptor> & dsc) {
 // ========================================================================= //
 // internal parsing machinery
 
-bool Settings::interpretValue(std::string & valueText, const int idx) {
+void Settings::interpretValue(std::string & valueText, const int idx) {
   std::vector<std::string> strL;
+  std::vector<int>         intL;
+  std::vector<double>      dblL;
   
   switch (valuesType[idx]) {
     case SettingsValueType::String     :
       values[idx] = valueText;
-      return true;
+      return;
+      
       
     case SettingsValueType::Integer    : 
-      try {values[idx] = std::stoi(valueText); return true;} 
+      try {values[idx] = std::stoi(valueText);} 
       catch (const std::exception& e) {
-        utterWarning("Invalid data type in keyword '" + keywords[idx] + "', expected integer.\nReverting to Default (" + valuesText[idx] + ")");
+        valueText = std::to_string( std::any_cast<int>(values[idx]) );
+        utterWarning(
+          "Invalid data type in keyword '" + keywords[idx] + "', expected integer.\n" + 
+          "Reverting to Default (" + valueText + ")"
+        );
       }
-      return false;
+      return;
+      
       
     case SettingsValueType::Double     :
-      try {values[idx] = std::stod(valueText); return true;} 
+      try {values[idx] = std::stod(valueText);} 
       catch (const std::exception& e) {
-        utterWarning("Invalid data type in keyword '" + keywords[idx] + "', expected double.\nReverting to Default (" + valuesText[idx] + ")");
+        valueText = std::to_string( std::any_cast<double>(values[idx]) );
+        utterWarning(
+          "Invalid data type in keyword '" + keywords[idx] + "', expected double.\n" + 
+          "Reverting to Default (" + valueText + ")"
+        );
       }
+      return;
+      
       
     case SettingsValueType::Boolean    :
       values[idx] = std::find(representationsOfTrue.begin(), representationsOfTrue.end(), 
                               uppercase(valueText)
                               ) != representationsOfTrue.end();
-      return true;
+      return;
+      
       
     case SettingsValueType::StringList :
       strL = splitString( valueText, valuesListSeparator[idx] );
@@ -128,21 +143,60 @@ bool Settings::interpretValue(std::string & valueText, const int idx) {
                       [] (const auto & s) {return trim_copy(s);}
       );
       values[idx] = strL;
-      valueText = vector_to_string(std::any_cast< std::vector<std::string> >(values[idx]), false);     //
-      return true;
+      valueText = vector_to_string(std::any_cast< std::vector<std::string> >(values[idx]), false);    // false: no brackets around list
+      return;
+      
       
     case SettingsValueType::IntegerList:
-      values[idx] = 0;
-      return true;
+      strL = splitString( valueText, valuesListSeparator[idx] );
+      std::transform( strL.begin(), strL.end(),
+                      strL.begin(),
+                      [] (const auto & s) {return trim_copy(s);}
+      );
+      try {
+        std::transform( strL.begin(), strL.end(),
+                        std::back_inserter(intL),
+                        [] (const auto & s) {return std::stoi(s);}
+        );
+      } catch (const std::exception& e) {
+        valueText = vector_to_string( std::any_cast< std::vector<int> >(values[idx]), false );
+        utterWarning(
+          "Invalid data type in keyword '" + keywords[idx] + "', expected integer list.\n" + 
+          "Reverting to Default (" + valueText + ")"
+        );
+        return;
+      }
+      values[idx] = intL;
+      valueText = vector_to_string(intL, false);
+      return;
+      
       
     case SettingsValueType::DoubleList :
-      values[idx] = 0;
-      return true;
+      strL = splitString( valueText, valuesListSeparator[idx] );
+      std::transform( strL.begin(), strL.end(),
+                      strL.begin(),
+                      [] (const auto & s) {return trim_copy(s);}
+      );
+      try {
+        std::transform( strL.begin(), strL.end(),
+                        std::back_inserter(dblL),
+                        [] (const auto & s) {return std::stod(s);}
+        );
+      } catch (const std::exception& e) {
+        valueText = vector_to_string( std::any_cast< std::vector<double> >(values[idx]), false );
+        utterWarning(
+          "Invalid data type in keyword '" + keywords[idx] + "', expected double list.\n" + 
+          "Reverting to Default (" + valueText + ")"
+        );
+        return;
+      }
+      values[idx] = intL;
+      valueText = vector_to_string(intL, false);
+      return;
       
     default:
       throw( std::invalid_argument("value type #" + std::to_string( static_cast<int>(valuesType[idx]) )+ " not supported.") );
   }
-  return 0;
 }
 
 // ========================================================================= //
@@ -190,10 +244,8 @@ void Settings::loadFile(const std::string & filename) {
       
       if ( !valuesCaseSensitive[idx] ) {to_uppercase(value);}
       if ( value != valuesText[idx]  ) {                            // check whethter default tag was read
-        if (interpretValue(value, idx)) {                           // if interpretation successful: update text representation
-          valuesText[idx] = value;                                  // otherwise, implicitly keep default.
-        }
-        
+        interpretValue(value, idx);
+        valuesText[idx] = value;
       }
     }
     

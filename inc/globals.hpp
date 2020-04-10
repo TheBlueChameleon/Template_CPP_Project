@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 #include <vector>
 #include <cctype>
@@ -100,13 +101,11 @@ static inline void consoleGotoRC(int row, int col)  {std::cout << "\033[" << row
 
 void consoleSetcolor (ConsoleColors code);
 
-// ========================================================================= //
-// tools
 
-// ------------------------------------------------------------------------- //
+// ========================================================================= //
 // String utility
 
-// ......................................................................... //
+// ------------------------------------------------------------------------- //
 // Trim String
 // Source:https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
 
@@ -116,28 +115,27 @@ static inline void ltrim(std::string &s) {
         return !std::isspace(ch);
     }));
 }
-
+// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . //
 // trim from end (in place)
 static inline void rtrim(std::string &s) {
     s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
         return !std::isspace(ch);
     }).base(), s.end());
 }
-
+// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . //
 // trim from both ends (in place)
 static inline void trim(std::string &s) {ltrim(s); rtrim(s);}
-
+// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . //
 // trim from start (copying)
 static inline std::string ltrim_copy(std::string s) {ltrim(s); return s;}
-
+// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . //
 // trim from end (copying)
 static inline std::string rtrim_copy(std::string s) {rtrim(s); return s;}
-
+// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . //
 // trim from both ends (copying)
 static inline std::string trim_copy(std::string s) {trim(s); return s;}
 
-// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . //
-
+// ......................................................................... //
 // adapted: remove all space characters (in place)
 static inline void fullTrim(std::string &s) {
   auto begin = s.begin(),
@@ -150,17 +148,17 @@ static inline void fullTrim(std::string &s) {
     }
   }
 }
-
+// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . //
 // adapted: remove all space characters (copying)
 static inline std::string fullTrim_copy(std::string s) {fullTrim(s); return s;}
 
-// ......................................................................... //
+// ------------------------------------------------------------------------ //
 // case conversion
 
 static inline void     to_uppercase(std::string & s) {for (auto & c: s) {c = toupper(c);}          }
 static inline std::string uppercase(std::string   s) {for (auto & c: s) {c = toupper(c);} return s;}
 
-// ......................................................................... //
+// --------------------------------------------------------------------
 // split string
 
 std::vector<std::string> splitString(const std::string & s, const char separator = ',');
@@ -172,11 +170,10 @@ bool wildcardmatch(const char        * pattern, const char        * searchstring
 bool wildcardmatch(const std::string & pattern, const std::string & searchstring);
 
 
-
-// ------------------------------------------------------------------------- //
+// ========================================================================= //
 // vector utility
 
-// ......................................................................... //
+// ------------------------------------------------------------------------- //
 // concatenate vectors
 // https://stackoverflow.com/questions/3177241/what-is-the-best-way-to-concatenate-two-vectors
 
@@ -189,7 +186,7 @@ static inline std::vector<T> concatenate (std::vector<T> & A, std::vector<T> & B
   
   return reVal;
 }
-
+// ......................................................................... //
 template<class T>
 static inline void appendTo_vector (std::vector<T> & A, std::vector<T> & B) {
   std::vector<T> reVal = std::vector<T>(A.size() + B.size());
@@ -198,7 +195,7 @@ static inline void appendTo_vector (std::vector<T> & A, std::vector<T> & B) {
   A.insert ( A.end(), B.begin(), B.end() );
 }
 
-// ......................................................................... //
+// ------------------------------------------------------------------------- //
 // show lists of lists Py-Style
 
 template<class T> 
@@ -219,7 +216,7 @@ static inline std::string vector_to_string(const std::vector<T> & list) {
   
   return reVal.str();
 }
-
+// ......................................................................... //
 template<class T>
 static inline std::string vecvec_to_string(const std::vector<std::vector<T>> & listlist) {
   std::stringstream reVal;
@@ -239,7 +236,7 @@ static inline std::string vecvec_to_string(const std::vector<std::vector<T>> & l
   return reVal.str();
 }
 
-// ......................................................................... //
+// ------------------------------------------------------------------------- //
 // vector distance
 
 template<class T>
@@ -257,24 +254,58 @@ double vector_distance(const std::vector<T> & A, const std::vector<T> & B) {
   ));
 }
 
-// ------------------------------------------------------------------------- //
+// ========================================================================= //
+// File utilty
+
+std::string generateTimestamp();
+
+static inline std::fstream openThrow(const std::string & filename) {
+  auto reVal = std::fstream(filename, std::fstream::out);
+  
+  if ( !reVal.is_open() ) {
+    throw( std::string("failed to open '") + filename + std::string("'") );
+  }
+  
+  return reVal;
+}
+// ......................................................................... //
+static inline std::string  generateFileComments(const std::string & content) {
+  std::string reVal;
+  
+  reVal += "# =========================================================================== #\n";
+  if ( content.size() ) {
+    reVal += "# " +  content + "\n";
+  }
+  reVal += "# timestamp: ";
+  reVal +=    generateTimestamp() + "\n";
+  reVal += "# =========================================================================== #\n\n";
+  
+  return reVal;
+}
+
+// ========================================================================= //
 // misc
 
 std::vector<double> linspace(const double start, const double end, const int N);
 
-static inline double factorial (double n) {
-  // yields exact results up to n = 22
-  // reaches computation limit after n = 170 and will yield nan:inf beyond (nothrow)
-  // use at own risk above that
+template <typename T>
+static inline T factorial (T n) {
+  /* Can be used with GMP types and works just fine. However, GMP classes have their proper methods for this.
+   * 
+   * type unsigned long long int yields results up to n = 20 and then goes into overload (returns zero)
+   * type double yields exact results up to n = 22
+   *    reaches computation limit after n = 170 and will yield nan:inf beyond (nothrow)
+   *    use at own risk above that
+   * type long double yields exact results up to n = 25
+   */
   
   if (n <   0) {throw std::invalid_argument("only positive arguments allowed.");}
   
-  double reVal = 1.0;     // using doubles to keep up with the horrible range factorials can reach
-  for (auto i = 2.0; i < n+1; ++i) {reVal *= i;}
+  T reVal = 1.0;     // using doubles to keep up with the horrible range factorials can reach
+  for (T i = 2; i < n + 1; ++i) {reVal *= i;}
   
   return reVal;
 }
 
 
-std::string generateTimestamp();
 #endif

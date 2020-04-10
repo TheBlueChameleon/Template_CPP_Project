@@ -24,15 +24,22 @@ void init([[maybe_unused]] int argc,
 ) {
   consoleSetcolor(ConsoleColors::FORE_GREEN);
   std::cout << "+-----------------------------------------------------------------------------+" << std::endl;
-  std::cout << "| YOUR PROJECT TITLE HERE                                                     |" << std::endl;
+  std::cout << "| CPP UTILITIES CHECK                                                         |" << std::endl;
   std::cout << "+-----------------------------------------------------------------------------+" << std::endl;
   consoleSetcolor(ConsoleColors::SPC_NORMAL);
+  
+  if (argc > 1) {std::cout << "Attempting to parse '" << argv[1] << "'" << std::endl;}
+  else          {std::cout << "Please provide a file pattern of PRA phaselist txt files." << std::endl; std::exit(1);}
   
   std::cout << "Initializing algorithm..." << std::endl;
   
   std::cout << "\tsetting up RNG" << std::endl;
   rand_phase_distribution = std::uniform_real_distribution<>(0.0, 6.28);
   std::cout << "Done." << std::endl;
+  
+  consoleSetcolor(ConsoleColors::FORE_YELLOW);
+  std::cout << "Generic Comment" << std::endl;
+  consoleSetcolor(ConsoleColors::SPC_NORMAL);
   
   std::cout << std::endl;
 }
@@ -100,7 +107,7 @@ void consoleSetcolor (ConsoleColors code) {
 }
 
 // ========================================================================= //
-// tools
+// String utility
 
 std::vector<std::string> splitString(const std::string & s, const char separator) {
   std::vector<std::string> reVal;
@@ -132,7 +139,29 @@ bool wildcardmatch(const char *first, const char * second) {
   return false; 
 }
 bool wildcardmatch(const std::string & pattern, const std::string & searchstring) {return wildcardmatch(pattern.c_str(), searchstring.c_str());}
+
+// ========================================================================= //
+// File utility
+
 // ......................................................................... //
+std::string  generateTimestamp() {
+  std::string reVal;
+  
+  // adapted from https://stackoverflow.com/questions/16357999/current-date-and-time-as-string
+  time_t      rawtime  = time     ( nullptr);
+  struct tm * timeinfo = localtime(&rawtime);
+  
+  char buffer[80];
+  strftime(buffer, sizeof(buffer), "%Y-%m-%d, %H:%M:%S", timeinfo);
+  
+  reVal = buffer;
+  
+  return reVal;
+}
+
+// ========================================================================= //
+// misc
+
 std::vector<double> linspace(const double start, const double end, const int N) {
   std::string errText;
   
@@ -159,21 +188,6 @@ std::vector<double> linspace(const double start, const double end, const int N) 
     reVal[i] = alpha;
     alpha += delta;
   }
-  
-  return reVal;
-}
-// ......................................................................... //
-std::string  generateTimestamp() {
-  std::string reVal;
-  
-  // adapted from https://stackoverflow.com/questions/16357999/current-date-and-time-as-string
-  time_t      rawtime  = time     ( nullptr);
-  struct tm * timeinfo = localtime(&rawtime);
-  
-  char buffer[80];
-  strftime(buffer, sizeof(buffer), "%Y-%m-%d, %H:%M:%S", timeinfo);
-  
-  reVal = buffer;
   
   return reVal;
 }

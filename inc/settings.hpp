@@ -22,17 +22,17 @@
 // ========================================================================= //
 // settings element descriptor
 
-enum class SettingsValueType {String, Integer, Double, Bool, FlagList, StringList, IntegerList, DoubleList};
+enum class SettingsValueType {String, Integer, Double, Boolean, StringList, IntegerList, DoubleList};
 
 struct SettingsElementDescriptor {
   std::string       keyword;
   
-  SettingsValueType valueType                     = SettingsValueType::Integer;
-  std::string       valueDefaultText              = "DEFAULT";
-  std::any          valueDefault                  = 0;
-  bool              valueDefaultTextCaseSensitive = false;
+  SettingsValueType valueType              = SettingsValueType::Integer;
+  std::string       valueText              = "DEFAULT";
+  std::any          value                  = 0;
+  bool              valueTextCaseSensitive = false;
   
-  char              listSeparator                 = ',';
+  char              listSeparator          = ',';
 };
 
 // ========================================================================= //
@@ -44,6 +44,7 @@ private:
   // behaviour objects
   
   static constexpr char invalidFilenameChars[] = "*~[]|:;,<> '\"";
+  static const std::vector<std::string> representationsOfTrue;
   
   // ....................................................................... //
   // settings file representation
@@ -57,18 +58,15 @@ private:
   std::vector<std::string>        valuesText;
   std::vector<std::any>           values;
   std::vector<bool>               valuesCaseSensitive;
+  std::vector<char>               valuesListSeparator;
   
-//   // ....................................................................... //
-//   // I/O convenience
-//   
-//   int warningsIndentFirst   = 3;
-//   int warningsIndentHanging = 3;
+  std::vector<bool>               foundInFile;
   
   
   // ----------------------------------------------------------------------- //
   // internal parsing machinery
   
-  void getFileContent(std::ifstream & hFile);
+  bool interpretValue(std::string & valueText, const int idx);
   
 public:
   // ----------------------------------------------------------------------- //

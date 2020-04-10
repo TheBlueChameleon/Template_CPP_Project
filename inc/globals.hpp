@@ -224,22 +224,26 @@ static inline void appendTo_vector (std::vector<T> & A, std::vector<T> & B) {
 // show lists of lists Py-Style
 
 template<class T> 
-static inline std::string vector_to_string(const std::vector<T> & list) {
-  std::stringstream reVal;
+static inline std::string vector_to_string(const std::vector<T> & list, bool brackets = true) {
+  std::stringstream stream;
+  std::string reVal;
   
-  if (list.size() == 0u) {return "[]";}
+  if (list.size() == 0u) {return brackets ? "[]" : "(empty)";}
   
-  reVal << "[";
+  if (brackets) {stream << "[";}
+  
   for (auto & e : list) {
-    reVal << e << ",";
+    stream << e << ",";
   }
   
   // remove the last comma
-  reVal.seekp(-1, reVal.cur);
+  stream.seekp(-1, stream.cur);
+  stream << "]";
   
-  reVal << "]";
+  reVal = stream.str();
+  if (!brackets) {reVal.pop_back();}
   
-  return reVal.str();
+  return reVal;
 }
 // ......................................................................... //
 template<class T>

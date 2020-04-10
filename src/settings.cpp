@@ -194,8 +194,8 @@ void Settings::interpretValue(std::string & valueText, const int idx) {
         valueText = vector_to_string( std::any_cast< std::vector<double> >(values[idx]), false );
         return;
       }
-      values[idx] = intL;
-      valueText = vector_to_string(intL, false);
+      values[idx] = dblL;
+      valueText = vector_to_string(dblL, false);
       return;
       
       
@@ -205,12 +205,34 @@ void Settings::interpretValue(std::string & valueText, const int idx) {
 }
 
 // ========================================================================= //
+// getters/setters
+
+char                             Settings::getCommentMarker() const         {return commentMarker;}
+void                             Settings::setCommentMarker(const char val) {commentMarker = val;}
+// ......................................................................... //
+const std::vector<std::string>        & Settings::getKeywords  () const {return keywords  ;}
+const std::vector<std::any>           & Settings::getValues    () const {return values    ;}
+const std::vector<std::string>        & Settings::getValuesText() const {return valuesText;}
+const std::vector<SettingsValueType>  & Settings::getValuesType() const {return valuesType;}
+// ......................................................................... //
+int Settings::getIndex (const std::string & key) const {
+  auto posIt = std::find(keywords.begin(), keywords.end(), uppercase(key) );
+  return (posIt == keywords.end()) ? -1 : std::distance(keywords.begin(), posIt);
+}
+
+// ========================================================================= //
 // I/O interface
 
 void Settings::loadFile(const std::string & filename) {
+  // ....................................................................... //
+  // sanity checks
+  
   std::ifstream hFile(filename);
   if (!hFile.is_open()) {throw std::runtime_error("Could not open file '" + filename + "'\n");}
   
+  
+  // ....................................................................... //
+  // parse file
   
   std::string key, value;
   int separationIdx, lineIdx = 0;
@@ -234,7 +256,7 @@ void Settings::loadFile(const std::string & filename) {
     trim(value);
     
     
-    
+    // interpret if possible
     auto posIt = std::find(keywords.begin(), keywords.end(), key);
     if (posIt == keywords.end()) {
       utterWarning("keyword '" + key + "' not accepted\n(Ignoring keyword))");
@@ -252,6 +274,18 @@ void Settings::loadFile(const std::string & filename) {
   }
   
   hFile.close();
+  
+  // ....................................................................... //
+  // warn about missed keywords
+  for (auto i = 0u; i < keywords.size(); ++i) {
+    if ( !foundInFile[i] ) {
+      utterWarning(
+        "keyword '" + keywords[i] + "' not in file.\n"
+        "Reverting to default (" + valuesText[i] + ")"
+      );
+    }
+  }
+  
 }
 // ......................................................................... //
 // void Settings::saveFile(const std::string & filename) const {}

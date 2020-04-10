@@ -37,6 +37,7 @@
 // ------------------------------------------------------------------------- //
 // globals
 
+class Settings;
 extern Settings globalSettings;
 constexpr double PI = std::atan(1.0)*4;
 

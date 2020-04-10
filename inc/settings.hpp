@@ -20,13 +20,25 @@
 #include <vector>
 #include <tuple>
 #include <any>
+#include <initializer_list>
 
 //own
+#include "globals.hpp"
 
 // ========================================================================= //
 // settings element descriptor
 
-enum class SettingsValueType {String, Integer, Real, Boolean, StringList, IntegerList, RealList};
+enum class SettingsValueType {
+  String,
+  Integer,
+  Real,
+  Boolean,
+  StringList,
+  IntegerList,
+  RealList
+};
+
+// ....................................................................... //
 
 struct SettingsElementDescriptor {
   std::string       keyword;
@@ -39,7 +51,7 @@ struct SettingsElementDescriptor {
   char              listSeparator = ',';
   
   // ....................................................................... //
-  // convenience template
+  // setter / type inference convenience template
   
   template<typename T>
   void set( std::string key,
@@ -61,6 +73,13 @@ struct SettingsElementDescriptor {
     else if ( std::is_constructible<std::vector<double>,      T>::value ) {valueType = SettingsValueType::RealList   ;}
     else {throw std::invalid_argument("Type not supported.");}
   }
+  
+  template<typename T>
+  void set( std::string                      key,
+            const std::initializer_list<T> & list, 
+            std::string                      def           = "DEFAULT",
+            bool                             caseSensitive = false
+  ) {set(key, std::vector<T>(list), def, caseSensitive);}
 };
 
 
@@ -108,6 +127,26 @@ public:
   
   // ----------------------------------------------------------------------- //
   // getters/setters
+  
+  char                                    getCommentMarker() const;
+  void                                    setCommentMarker(const char val);
+  
+  const std::vector<std::string>        & getKeywords  () const;
+  const std::vector<std::any>           & getValues    () const;
+  const std::vector<std::string>        & getValuesText() const;
+  const std::vector<SettingsValueType>  & getValuesType() const;
+  
+  int getIndex (const std::string & key) const;
+  
+  template<typename T>
+  const T & getValue(int idx) {
+    if (idx < 0 || static_cast<unsigned>(idx) >= keywords.size()) {throw std::invalid_argument("Index out of bounds.");}
+    return std::any_cast<T &>(values[idx]);
+  }
+  
+  template<typename T>
+  const T & getValue(const std::string & key) {return getValue<T>( getIndex(key) );}
+  
   
   
   // ----------------------------------------------------------------------- //

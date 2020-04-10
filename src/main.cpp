@@ -63,10 +63,10 @@ int main (int argc, char ** argv) {
   // want to see something ugly?
   // std::cout << SED.value.type().name() << std::endl;
   
-  SED.set("intlist", std::vector<int>({1, 2, 3}) );
+  SED.set("intlist", {1, 2, 3} );
   vSED.push_back(SED);
   
-  SED.set("intlist", std::vector<double>({1, 2, 3}) );
+  SED.set("dbllist", {1.0, 2.0, 3.0} );
   vSED.push_back(SED);
   
   SED.keyword = "incomplete";           // this will trigger a warning: invalid type
@@ -82,5 +82,16 @@ int main (int argc, char ** argv) {
   // ======================================================================= //
   
   std::cout << "main done." << std::endl;
+  std::cout << std::endl;
   
+//   std::cout << vector_to_string( globalSettings.getKeywords() ) << std::endl;
+  
+//   std::cout << std::endl;
+//   std::cout << globalSettings.getIndex("BOOLEAN1") << std::endl;
+//   std::cout << globalSettings.getIndex("BOOLEAN2") << std::endl;
+//   std::cout << globalSettings.getIndex("BOOLEAN7") << std::endl;
+  
+  std::cout << globalSettings.getValue<bool>(0) << std::endl;
+  std::cout << globalSettings.getValue<bool>("boolean3") << std::endl;
+  std::cout << vector_to_string( globalSettings.getValue< std::vector<double> >("dbllist") ) << std::endl;
 }

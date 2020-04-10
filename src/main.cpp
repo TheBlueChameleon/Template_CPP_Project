@@ -25,34 +25,29 @@ int main (int argc, char ** argv) {
   SettingsElementDescriptor SED;
   std::vector<SettingsElementDescriptor> vSED;
   
-  SED.keyword = "intval";
+  SED.set("intval", 0);
   vSED.push_back(SED);
-  vSED.push_back(SED);      // this will trigger a warning: duplicate keyword
+  vSED.push_back(SED);                        // this will trigger a warning: duplicate keyword
   
-  SED.keyword = "casetest";
-  vSED.push_back(SED);
-  
-  SED.keyword = "defaultvalue";
-  SED.valueText = "Auto";
+  SED.set("casetest", 0);
   vSED.push_back(SED);
   
-  SED.keyword = "caseDefault";
-  SED.valueTextCaseSensitive = true;     // this will trigger a warning: Invalid data type
+  SED.set("defaultvalue", 0, "Auto");
   vSED.push_back(SED);
   
-  SED.keyword = "real";
-  SED.valueType = SettingsValueType::Real;
-  SED.value = 1.0;
+  SED.set("caseDefault", 0, "Auto", true);    // this will trigger a warning: Invalid data type
   vSED.push_back(SED);
   
-  SED.keyword = "notInIni";             // this will trigger a warning:
+  SED.set("real", 0.0);
   vSED.push_back(SED);
   
-  SED.keyword = "boolean1";
-  SED.valueType = SettingsValueType::Boolean;
-  SED.value = true;
+  SED.keyword = "notInIni";                   // this will trigger a warning:
+  vSED.push_back(SED);
+  
+  SED.set("boolean1", true);
   vSED.push_back(SED);
   SED.keyword = "boolean2";
+  SED.caseSensitive = false;
   vSED.push_back(SED);
   SED.keyword = "boolean3";
   vSED.push_back(SED);
@@ -63,19 +58,15 @@ int main (int argc, char ** argv) {
   SED.keyword = "boolean6";
   vSED.push_back(SED);
   
-  SED.keyword = "strlist";
-  SED.valueType = SettingsValueType::StringList;
-  SED.value = std::vector<std::string>({"Bela", "Farin", "Rod"});
-//   std::cout << SED.value.type().name() << std::endl;
+  SED.set("strlist", std::vector<std::string>({"Bela", "Farin", "Rod"}) );
+  vSED.push_back(SED);
+  // want to see something ugly?
+  // std::cout << SED.value.type().name() << std::endl;
+  
+  SED.set("intlist", std::vector<int>({1, 2, 3}) );
   vSED.push_back(SED);
   
-  SED.keyword = "intlist";
-  SED.valueType = SettingsValueType::IntegerList;
-  SED.value = std::vector<int>({1, 2, 3});
-  vSED.push_back(SED);
-  
-  SED.keyword = "dbllist";
-  SED.valueType = SettingsValueType::RealList;
+  SED.set("intlist", std::vector<double>({1, 2, 3}) );
   vSED.push_back(SED);
   
   SED.keyword = "incomplete";           // this will trigger a warning: invalid type
@@ -91,4 +82,5 @@ int main (int argc, char ** argv) {
   // ======================================================================= //
   
   std::cout << "main done." << std::endl;
+  
 }

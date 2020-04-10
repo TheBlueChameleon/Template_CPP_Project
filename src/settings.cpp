@@ -70,7 +70,7 @@ Settings::Settings(std::vector<SettingsElementDescriptor> & dsc) {
   );
   std::transform( dsc.begin(), dsc.end(),
                   std::back_inserter(valuesCaseSensitive),
-                  [] (const auto & SED) {return SED.valueTextCaseSensitive;}
+                  [] (const auto & SED) {return SED.caseSensitive;}
   );
   std::transform( dsc.begin(), dsc.end(),
                   std::back_inserter(valuesListSeparator),
@@ -122,7 +122,7 @@ void Settings::interpretValue(std::string & valueText, const int idx) {
       try {values[idx] = std::stod(valueText);} 
       catch (const std::exception& e) {
         utterWarning(
-          "Invalid data type in keyword '" + keywords[idx] + "', expected double.\n" +
+          "Invalid data type in keyword '" + keywords[idx] + "', expected real.\n" +
           "Found: '" + valueText + "'\n" +
           "Reverting to Default (" + std::to_string( std::any_cast<double>(values[idx]) ) + ")"
         );
@@ -187,7 +187,7 @@ void Settings::interpretValue(std::string & valueText, const int idx) {
         );
       } catch (const std::exception& e) {
         utterWarning(
-          "Invalid data type in keyword '" + keywords[idx] + "', expected double list.\n" +
+          "Invalid data type in keyword '" + keywords[idx] + "', expected real list.\n" +
           "Found: '" + valueText + "'\n" +
           "Reverting to Default (" + vector_to_string( std::any_cast< std::vector<double> >(values[idx]), false ) + ")"
         );

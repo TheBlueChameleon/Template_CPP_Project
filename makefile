@@ -26,7 +26,7 @@ EXENAME = Template_CPP_Project
 # --------------------------------------------------------------------------- #
 # Runtime setup
 
-RUNTIME_PARAM = "./input/*Phaselist.txt"
+RUNTIME_PARAM = "settings.ini"
 
 # --------------------------------------------------------------------------- #
 # GIT setup

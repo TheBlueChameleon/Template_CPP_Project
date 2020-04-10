@@ -69,9 +69,7 @@ int main (int argc, char ** argv) {
   SED.set("dbllist", {1.0, 2.0, 3.0} );
   vSED.push_back(SED);
   
-  SED.keyword = "incomplete";           // this will trigger a warning: invalid type
-  SED.valueType = SettingsValueType::Integer;
-  SED.value = 0;
+  SED.set("incomplete", 0);                   // this will trigger a warning: invalid type
   vSED.push_back(SED);
   
   globalSettings = Settings(vSED);

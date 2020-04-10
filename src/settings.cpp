@@ -99,19 +99,28 @@ void Settings::interpretValue(std::string & valueText, const int idx) {
   std::vector<int>         intL;
   std::vector<double>      dblL;
   
+  if ( valueText.empty() && valuesType[idx] != SettingsValueType::String ) {
+    utterWarning(
+      "Value for keyword '" + keywords[idx] + "' was omitted\n" +
+      "Reverting to default (" + valuesText[idx] + ")"
+    );
+    valueText = valuesText[idx];
+    return;
+  }
+  
   switch (valuesType[idx]) {
     case SettingsValueType::String :
       values[idx] = valueText;
       return;
       
       
-    case SettingsValueType::Integer : 
+    case SettingsValueType::Integer :
       try {values[idx] = std::stoi(valueText);} 
       catch (const std::exception& e) {
         utterWarning(
           "Invalid data type in keyword '" + keywords[idx] + "', expected integer.\n" +
           "Found: '" + valueText + "'\n" +
-          "Reverting to Default (" + std::to_string( std::any_cast<int>(values[idx]) ) + ")"
+          "Reverting to default (" + std::to_string( std::any_cast<int>(values[idx]) ) + ")"
         );
         valueText = std::to_string( std::any_cast<int>(values[idx]) );
       }
@@ -124,7 +133,7 @@ void Settings::interpretValue(std::string & valueText, const int idx) {
         utterWarning(
           "Invalid data type in keyword '" + keywords[idx] + "', expected real.\n" +
           "Found: '" + valueText + "'\n" +
-          "Reverting to Default (" + std::to_string( std::any_cast<double>(values[idx]) ) + ")"
+          "Reverting to default (" + std::to_string( std::any_cast<double>(values[idx]) ) + ")"
         );
         valueText = std::to_string( std::any_cast<double>(values[idx]) );
       }
@@ -164,7 +173,7 @@ void Settings::interpretValue(std::string & valueText, const int idx) {
         utterWarning(
           "Invalid data type in keyword '" + keywords[idx] + "', expected integer list.\n" +
           "Found: '" + valueText + "'\n" +
-          "Reverting to Default (" + vector_to_string( std::any_cast< std::vector<int> >(values[idx]), false ) + ")"
+          "Reverting to default (" + vector_to_string( std::any_cast< std::vector<int> >(values[idx]), false ) + ")"
         );
         valueText = vector_to_string( std::any_cast< std::vector<int> >(values[idx]), false );
         return;
@@ -189,7 +198,7 @@ void Settings::interpretValue(std::string & valueText, const int idx) {
         utterWarning(
           "Invalid data type in keyword '" + keywords[idx] + "', expected real list.\n" +
           "Found: '" + valueText + "'\n" +
-          "Reverting to Default (" + vector_to_string( std::any_cast< std::vector<double> >(values[idx]), false ) + ")"
+          "Reverting to default (" + vector_to_string( std::any_cast< std::vector<double> >(values[idx]), false ) + ")"
         );
         valueText = vector_to_string( std::any_cast< std::vector<double> >(values[idx]), false );
         return;
@@ -248,13 +257,13 @@ void Settings::loadFile(const std::string & filename) {
     separationIdx = line.find('=');
     
     key   = line.substr(0, separationIdx);
-    value = line.substr(separationIdx + 1);
-    
     to_uppercase(key);
+    
+    if (separationIdx != static_cast<signed>(std::string::npos))  {value = line.substr(separationIdx + 1);}
+    else                                                          {value = "";}
     
     trim(key);
     trim(value);
-    
     
     // interpret if possible
     auto posIt = std::find(keywords.begin(), keywords.end(), key);

@@ -21,7 +21,7 @@ EXEDIR = .
 EXTENSION_CODE   = .cpp
 EXTENSION_HEADER = .hpp
 
-EXENAME = Template_CPP_Project
+EXENAME = CPP-Utilities
 
 # --------------------------------------------------------------------------- #
 # Runtime setup

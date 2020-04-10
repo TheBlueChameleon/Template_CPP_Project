@@ -19,27 +19,40 @@
 // ========================================================================= //
 // generic
 
+// ------------------------------------------------------------------------- //
+// globals
+
+Settings globalSettings;
+
+// ------------------------------------------------------------------------- //
+// setup convenience
+
 void init([[maybe_unused]] int argc, 
           [[maybe_unused]] char ** argv
 ) {
-  consoleSetcolor(ConsoleColors::FORE_GREEN);
-  std::cout << "+-----------------------------------------------------------------------------+" << std::endl;
-  std::cout << "| CPP UTILITIES CHECK                                                         |" << std::endl;
-  std::cout << "+-----------------------------------------------------------------------------+" << std::endl;
-  consoleSetcolor(ConsoleColors::SPC_NORMAL);
+  
+  ConsoleColorsTriple headColor = {ConsoleColors::FORE_GREEN};
+  coutHeadline("CPP UTILITIES CHECK", headColor);
   
   if (argc > 1) {std::cout << "Attempting to parse '" << argv[1] << "'" << std::endl;}
   else          {std::cout << "Please provide a file pattern of PRA phaselist txt files." << std::endl; std::exit(1);}
   
-  std::cout << "Initializing algorithm..." << std::endl;
+  std::cout << "Initializing ..." << std::endl;
   
-  std::cout << "\tsetting up RNG" << std::endl;
+  std::cout << "   setting up RNG ..." << std::endl;
   rand_phase_distribution = std::uniform_real_distribution<>(0.0, 6.28);
-  std::cout << "Done." << std::endl;
+  std::cout << "   done." << std::endl;
+  
+  
+  std::cout << "   reading settings file ..." << std::endl;
+  globalSettings.loadFile(argv[1]);
+  std::cout << "   done." << std::endl;
+  
   
   consoleSetcolor(ConsoleColors::FORE_YELLOW);
   std::cout << "Generic Comment" << std::endl;
   consoleSetcolor(ConsoleColors::SPC_NORMAL);
+  
   
   std::cout << std::endl;
 }
@@ -106,6 +119,69 @@ void consoleSetcolor (ConsoleColors code) {
   }
 }
 
+// ......................................................................... //
+
+void utterWarning (const std::string & text, 
+                                 const std::string & headline,
+                                 const int indentFirst,
+                                 const int indentHanging,
+                                 const ConsoleColorsTriple & headlineColors,
+                                 const ConsoleColorsTriple &     textColors
+) {
+  
+  if ( (indentFirst < 0) || (indentHanging < 0) ) {
+    std::string errText = "Invalid argument in ";
+    errText += __PRETTY_FUNCTION__;
+    errText += ":\n";
+    errText += "\tindent parameters needs to be greater than zero!";
+    throw std::invalid_argument(errText);
+  }
+  
+  
+  consoleSetcolor(headlineColors.spc );
+  consoleSetcolor(headlineColors.fore);
+  consoleSetcolor(headlineColors.back);
+  
+  std::cout << std::string(indentFirst, ' ');
+  std::cout << headline << std::endl;
+  
+  
+  consoleSetcolor(textColors.spc );
+  consoleSetcolor(textColors.fore);
+  consoleSetcolor(textColors.back);
+  
+  int indentTotal = indentFirst + indentHanging;
+  const std::string indent(indentTotal, ' ');
+  
+  auto lines = splitString(text, '\n');
+  for (auto & line : lines) {
+    std::cout << indent;
+    std::cout << line;
+    std::cout << std::endl;
+  }
+}
+// ......................................................................... //
+void coutHeadline ( const std::string & text,
+                    const ConsoleColorsTriple & headlineColors
+) {
+  
+  auto lines = splitString(text, '\n');
+  
+  consoleSetcolor(headlineColors.spc );
+  consoleSetcolor(headlineColors.fore);
+  consoleSetcolor(headlineColors.back);
+  
+  std::cout << "+-----------------------------------------------------------------------------+" << std::endl;
+  for (auto & line : lines) {
+    std::cout << "| ";
+    std::cout << line;
+    std::cout << std::string(75 - line.size(), ' ');
+    std::cout << " |\n";
+  }
+  std::cout << "+-----------------------------------------------------------------------------+" << std::endl;
+  
+  consoleSetcolor(ConsoleColors::SPC_NORMAL);
+}
 // ========================================================================= //
 // String utility
 

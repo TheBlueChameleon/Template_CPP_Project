@@ -29,11 +29,19 @@
 #include <locale>
 
 // own
+#include "settings.hpp"
 
 // ========================================================================= //
 // generic
 
+// ------------------------------------------------------------------------- //
+// globals
+
+extern Settings globalSettings;
 constexpr double PI = std::atan(1.0)*4;
+
+// ------------------------------------------------------------------------- //
+// setup convenience
 
 void init(int argc = 0, char ** argv = nullptr);
 
@@ -96,11 +104,28 @@ enum class ConsoleColors {
   SPC_BOLD_OFF,
 };
 
+struct ConsoleColorsTriple {
+  ConsoleColors fore = ConsoleColors::FORE_WHITE;
+  ConsoleColors back = ConsoleColors::BACK_BLACK;
+  ConsoleColors spc  = ConsoleColors::SPC_NORMAL;
+};
+
 static inline void consoleClear()                   {std::cout << "\033[H\033[J";}
 static inline void consoleGotoRC(int row, int col)  {std::cout << "\033[" << row << ";" << col << "H";}
 
 void consoleSetcolor (ConsoleColors code);
 
+void utterWarning ( const std::string & text, 
+                    const std::string & headline = "Warning",
+                    const int indentFirst   = 0,
+                    const int indentHanging = 3,
+                    const ConsoleColorsTriple & headlineColors = {ConsoleColors::FORE_BRIGHT_RED},
+                    const ConsoleColorsTriple & textColors     = {ConsoleColors::FORE_NORMAL}
+);
+
+void coutHeadline ( const std::string & text, 
+                    const ConsoleColorsTriple & headlineColors = {ConsoleColors::FORE_BRIGHT_RED}
+);
 
 // ========================================================================= //
 // String utility
@@ -263,7 +288,7 @@ static inline std::fstream openThrow(const std::string & filename) {
   auto reVal = std::fstream(filename, std::fstream::out);
   
   if ( !reVal.is_open() ) {
-    throw( std::string("failed to open '") + filename + std::string("'") );
+    throw( std::invalid_argument("failed to open '" + filename + "'") );
   }
   
   return reVal;

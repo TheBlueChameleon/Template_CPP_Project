@@ -22,7 +22,7 @@
 // ========================================================================= //
 // settings element descriptor
 
-enum class SettingsValueType {String, Integer, Double, Boolean, StringList, IntegerList, DoubleList};
+enum class SettingsValueType {String, Integer, Real, Boolean, StringList, IntegerList, RealList};
 
 struct SettingsElementDescriptor {
   std::string       keyword;

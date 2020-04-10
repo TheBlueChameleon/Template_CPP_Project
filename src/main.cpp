@@ -40,8 +40,8 @@ int main (int argc, char ** argv) {
   SED.valueTextCaseSensitive = true;     // this will trigger a warning: Invalid data type
   vSED.push_back(SED);
   
-  SED.keyword = "double";
-  SED.valueType = SettingsValueType::Double;
+  SED.keyword = "real";
+  SED.valueType = SettingsValueType::Real;
   SED.value = 1.0;
   vSED.push_back(SED);
   
@@ -75,7 +75,7 @@ int main (int argc, char ** argv) {
   vSED.push_back(SED);
   
   SED.keyword = "dbllist";
-  SED.valueType = SettingsValueType::DoubleList;
+  SED.valueType = SettingsValueType::RealList;
   vSED.push_back(SED);
   
   SED.keyword = "incomplete";           // this will trigger a warning: invalid type

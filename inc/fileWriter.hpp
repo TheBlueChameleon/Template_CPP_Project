@@ -83,7 +83,6 @@ private:
   std::string dataColumnFormat1D = "($2 >= 0 ? $2 : 1/0)";
   std::string dataColumnFormat2D = "($3 >= 0 ? $3 : 1/0)";
   
-  
 public:
   // ----------------------------------------------------------------------- //
   // CTor, DTor
@@ -108,7 +107,6 @@ public:
     itBegin = data.begin();
     itEnd   = data.end  ();
   }
-  
   
   // ----------------------------------------------------------------------- //
   // getter / setter
@@ -465,7 +463,7 @@ public:
           << ":"
           << (std::isnan(yRangeMax) ? "*"s : std::to_string(yRangeMax))
           << "]"                                                                               << std::endl;
-    hFile << "set cbrange  [" 
+    hFile << "set cbrange [" 
           << (std::isnan(cRangeMin) ? "*"s : std::to_string(cRangeMin))
           << ":"
           << (std::isnan(cRangeMax) ? "*"s : std::to_string(cRangeMax))
@@ -505,6 +503,7 @@ public:
     hFile << "plot '" << filenameBase << extGNU << "' u 1:" << dataColumnFormat1D << " with lines" << std::endl;
     
     hFile.close();
+    if (autoRunScript) {runScript();}
   }
   // ....................................................................... //
   void writeScript2D () const {
@@ -518,13 +517,56 @@ public:
     hFile << "plot '" << filenameBase << extGNU << "' u 1:2:" << dataColumnFormat2D << " with image pixels" << std::endl;
     
     hFile.close();
+    if (autoRunScript) {runScript();}
   }
   
   // ....................................................................... //
   
-  void writeMultiScript1D(const std::vector<const std::string> & GNUfiles) const;
-  void writeMultiScript2D(const std::vector<const std::string> & GNUfiles) const;
+  void writeMultiScript1D(const std::vector<std::string> & files,
+                          const std::vector<std::string> & titles
+  ) const {
+    auto hFile = openThrow(filenameBase + extSCRIPT);
+    
+    hFile << generateFileComments(fileContentDescription);
+    
+    writeScript1DHead(hFile);
+    
+    for (auto i = 0u; i < files.size(); ++i) {
+      hFile << "set title \"" << (i < titles.size() ? titles[i] : files[i]) << "\" offset 0, -1" << std::endl;
+      hFile << "plot '" << files[i] << "' u 1:" << dataColumnFormat1D << " with lines" << std::endl;
+    }
+    
+    hFile.close();
+    if (autoRunScript) {runScript();}
+  }
+  // ....................................................................... //
+  void writeMultiScript2D(const std::vector<std::string> & files,
+                          const std::vector<std::string> & titles
+  ) const {
+    auto hFile = openThrow(filenameBase + extSCRIPT);
+    
+    hFile << generateFileComments(fileContentDescription);
+    
+    writeScript2DHead(hFile);
+    
+    for (auto i = 0u; i < files.size(); ++i) {
+      hFile << "set title \"" << (i < titles.size() ? titles[i] : files[i]) << "\" offset 0, -1" << std::endl;
+      hFile << "plot '" << files[i] << "' u 1:2:" << dataColumnFormat2D << " with image pixels" << std::endl;
+    }
+    
+    hFile.close();
+    if (autoRunScript) {runScript();}
+  }
   
+  // ....................................................................... //
+  
+  void runScript() const {
+    std::cout << "About to run gnuplot scripts..." << std::endl;
+    if (std::system(  ("gnuplot "s + filenameBase + extSCRIPT).data()  )) {
+      utterWarning("gnuplot did not succeed.");
+    }
+    std::cout << "done." << std::endl;
+  }
   // ----------------------------------------------------------------------- //
   // misc
   

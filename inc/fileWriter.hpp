@@ -15,7 +15,6 @@
 #include <fstream>
 
 #include <string>
-  using namespace std::string_literals;
 #include <vector>
 #include <iterator>
 
@@ -121,7 +120,7 @@ public:
   void                setFilenameBase (const std::string & val) {
     if (val.find_first_of(invalidFilenameChars) != std::string::npos) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename base in "s + __PRETTY_FUNCTION__ + ".\n" +
+        std::string("Attempted to set invalid filename base in ") + __PRETTY_FUNCTION__ + ".\n" +
         "  filenameBase        : '" + val + "'\n" +
         "  forbidden characters: " + invalidFilenameChars
       );
@@ -133,7 +132,7 @@ public:
   void                setExtTXT       (const std::string & val) {
     if (val.find_first_of(invalidFilenameChars) != std::string::npos) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename in "s + __PRETTY_FUNCTION__ + ".\n" +
+        std::string("Attempted to set invalid filename in ") + __PRETTY_FUNCTION__ + ".\n" +
         "  extTXT              : '" + val + "'\n" +
         "  forbidden characters: " + invalidFilenameChars
       );
@@ -145,7 +144,7 @@ public:
   void                setExtGNU       (const std::string & val) {
     if (val.find_first_of(invalidFilenameChars) != std::string::npos) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename in "s + __PRETTY_FUNCTION__ + ".\n" +
+        std::string("Attempted to set invalid filename in ") + __PRETTY_FUNCTION__ + ".\n" +
         "  extGNU              : '" + val + "'\n" +
         "  forbidden characters: " + invalidFilenameChars
       );
@@ -157,7 +156,7 @@ public:
   void                setExtTEX       (const std::string & val) {
     if (val.find_first_of(invalidFilenameChars) != std::string::npos) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename in "s + __PRETTY_FUNCTION__ + ".\n" +
+        std::string("Attempted to set invalid filename in ") + __PRETTY_FUNCTION__ + ".\n" +
         "  extTEX              : '" + val + "'\n" +
         "  forbidden characters: " + invalidFilenameChars
       );
@@ -169,7 +168,7 @@ public:
   void                setExtSCRIPT    (const std::string & val) {
     if (val.find_first_of(invalidFilenameChars) != std::string::npos) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename in "s + __PRETTY_FUNCTION__ + ".\n" +
+        std::string("Attempted to set invalid filename in ") + __PRETTY_FUNCTION__ + ".\n" +
         "  extSCRIPT           : '" + val + "'\n" +
         "  forbidden characters: " + invalidFilenameChars
       );
@@ -181,7 +180,7 @@ public:
   void                setExtPDF       (const std::string & val) {
     if (val.find_first_of(invalidFilenameChars) != std::string::npos) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename in "s + __PRETTY_FUNCTION__ + ".\n" +
+        std::string("Attempted to set invalid filename in ") + __PRETTY_FUNCTION__ + ".\n" +
         "  extPDF              : '" + val + "'\n" +
         "  forbidden characters: " + invalidFilenameChars
       );
@@ -204,7 +203,7 @@ public:
   void                             setCols              (int val) {
     if (val < 1) {
       throw std::invalid_argument(
-        "Attempted to set invalid column in "s + __PRETTY_FUNCTION__ + ".\n" +
+        std::string("Attempted to set invalid column in ") + __PRETTY_FUNCTION__ + ".\n" +
         "  cols: " + std::to_string(val)
       );
     }
@@ -265,7 +264,7 @@ public:
   void writeTXT1D (const int colID = 0) const {
     if (colID < 0) {
       throw std::invalid_argument(
-        "Attempted to plot invalid column in "s + __PRETTY_FUNCTION__ + ".\n" +
+        std::string("Attempted to plot invalid column in ") + __PRETTY_FUNCTION__ + ".\n" +
         "  column: " + std::to_string(colID)
       );
     }
@@ -345,7 +344,7 @@ public:
   void writeGNU1D (const int colID = 0) const {
     if (colID < 0) {
       throw std::invalid_argument(
-        "Attempted to plot invalid column in "s + __PRETTY_FUNCTION__ + ".\n" +
+        std::string("Attempted to plot invalid column in ") + __PRETTY_FUNCTION__ + ".\n" +
         "  column: " + std::to_string(colID)
       );
     }
@@ -422,14 +421,14 @@ public:
     hFile << "# =========================================================================== #" << std::endl;
     hFile << "# plot dimensions"                                                               << std::endl;
     hFile << "set xrange  [" 
-          << (std::isnan(xRangeMin) ? "*"s : std::to_string(xRangeMin))
+          << (std::isnan(xRangeMin) ? std::string("*") : std::to_string(xRangeMin))
           << ":"
-          << (std::isnan(xRangeMax) ? "*"s : std::to_string(xRangeMax))
+          << (std::isnan(xRangeMax) ? std::string("*") : std::to_string(xRangeMax))
           << "]"                                                                               << std::endl;
     hFile << "set yrange  [" 
-          << (std::isnan(yRangeMin) ? "*"s : std::to_string(yRangeMin))
+          << (std::isnan(yRangeMin) ? std::string("*") : std::to_string(yRangeMin))
           << ":"
-          << (std::isnan(yRangeMax) ? "*"s : std::to_string(yRangeMax))
+          << (std::isnan(yRangeMax) ? std::string("*") : std::to_string(yRangeMax))
           << "]"                                                                               << std::endl;
     hFile                                                                                      << std::endl;
     hFile << "# =========================================================================== #" << std::endl;
@@ -454,19 +453,19 @@ public:
     hFile << "# =========================================================================== #" << std::endl;
     hFile << "# plot dimensions"                                                               << std::endl;
     hFile << "set xrange  [" 
-          << (std::isnan(xRangeMin) ? "*"s : std::to_string(xRangeMin))
+          << (std::isnan(xRangeMin) ? std::string("*") : std::to_string(xRangeMin))
           << ":"
-          << (std::isnan(xRangeMax) ? "*"s : std::to_string(xRangeMax))
+          << (std::isnan(xRangeMax) ? std::string("*") : std::to_string(xRangeMax))
           << "]"                                                                               << std::endl;
     hFile << "set yrange  [" 
-          << (std::isnan(yRangeMin) ? "*"s : std::to_string(yRangeMin))
+          << (std::isnan(yRangeMin) ? std::string("*") : std::to_string(yRangeMin))
           << ":"
-          << (std::isnan(yRangeMax) ? "*"s : std::to_string(yRangeMax))
+          << (std::isnan(yRangeMax) ? std::string("*") : std::to_string(yRangeMax))
           << "]"                                                                               << std::endl;
     hFile << "set cbrange [" 
-          << (std::isnan(cRangeMin) ? "*"s : std::to_string(cRangeMin))
+          << (std::isnan(cRangeMin) ? std::string("*") : std::to_string(cRangeMin))
           << ":"
-          << (std::isnan(cRangeMax) ? "*"s : std::to_string(cRangeMax))
+          << (std::isnan(cRangeMax) ? std::string("*") : std::to_string(cRangeMax))
           << "]"                                                                               << std::endl;
     hFile                                                                                      << std::endl;
     hFile << "# =========================================================================== #" << std::endl;
@@ -562,7 +561,7 @@ public:
   
   void runScript() const {
     std::cout << "About to run gnuplot scripts..." << std::endl;
-    if (std::system(  ("gnuplot "s + filenameBase + extSCRIPT).data()  )) {
+    if (std::system(  (std::string("gnuplot ") + filenameBase + extSCRIPT).data()  )) {
       utterWarning("gnuplot did not succeed.");
     }
     std::cout << "done." << std::endl;
@@ -573,12 +572,12 @@ public:
   std::string to_string() const {
     std::string reVal = "File Writer object\n";
     
-    reVal += "\thas data points: "s + (empty() ? "no" : "yes") + "\n";
-    reVal += "\t#data points:    "s + std::to_string(size()) + "\n";
-    reVal += "\t#columns:        "s + std::to_string(cols) + "\n";
-    reVal += "\ttitle:           "s + title + "\n";
-    reVal += "\tx-label          "s + xLabel + "\n";
-    reVal += "\ty-label          "s + yLabel + "\n";
+    reVal += std::string("\thas data points: ") + (empty() ? "no" : "yes") + "\n";
+    reVal += std::string("\t#data points:    ") + std::to_string(size()) + "\n";
+    reVal += std::string("\t#columns:        ") + std::to_string(cols) + "\n";
+    reVal += std::string("\ttitle:           ") + title + "\n";
+    reVal += std::string("\tx-label          ") + xLabel + "\n";
+    reVal += std::string("\ty-label          ") + yLabel + "\n";
     
     return reVal;
   }

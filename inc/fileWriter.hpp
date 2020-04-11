@@ -64,7 +64,7 @@ private:
   
   int cols = 1;
   
-  std::string title;
+  std::string title  = "title";
   std::string xLabel = "x";
   std::string yLabel = "y";
   
@@ -414,8 +414,113 @@ public:
   
   // ....................................................................... //
   
-  void writeScript1D () const;
-  void writeScript2D () const;
+  void writeScript1DHead (std::ostream & hFile) const {
+    hFile << "# =========================================================================== #" << std::endl;
+    hFile << "# output format"                                                                 << std::endl;
+    hFile << "set terminal postscript enhanced"                                                << std::endl;
+    hFile << "set terminal pdf"                                                                << std::endl;
+    hFile << "set output '" << filenameBase << extPDF << "'"                                   << std::endl;
+    hFile                                                                                      << std::endl;
+    hFile << "# =========================================================================== #" << std::endl;
+    hFile << "# plot dimensions"                                                               << std::endl;
+    hFile << "set xrange  [" 
+          << (std::isnan(xRangeMin) ? "*"s : std::to_string(xRangeMin))
+          << ":"
+          << (std::isnan(xRangeMax) ? "*"s : std::to_string(xRangeMax))
+          << "]"                                                                               << std::endl;
+    hFile << "set yrange  [" 
+          << (std::isnan(yRangeMin) ? "*"s : std::to_string(yRangeMin))
+          << ":"
+          << (std::isnan(yRangeMax) ? "*"s : std::to_string(yRangeMax))
+          << "]"                                                                               << std::endl;
+    hFile                                                                                      << std::endl;
+    hFile << "# =========================================================================== #" << std::endl;
+    hFile << "# plot format"                                                                   << std::endl;
+    hFile << "set key off"                                                                     << std::endl;
+    hFile << "set xlabel \"" << xLabel << "\""                                                 << std::endl;
+    hFile << "set ylabel \"" << yLabel << "\" rotate parallel"                                 << std::endl;
+    hFile                                                                                      << std::endl;
+    hFile << "# =========================================================================== #" << std::endl;
+    hFile << "# make plots"                                                                    << std::endl;
+    
+    if (hFile.bad()) {throw std::invalid_argument("File stream is not ready");}
+  };
+  // ....................................................................... //
+  void writeScript2DHead (std::ostream & hFile) const {
+    hFile << "# =========================================================================== #" << std::endl;
+    hFile << "# output format"                                                                 << std::endl;
+    hFile << "set terminal postscript enhanced"                                                << std::endl;
+    hFile << "set terminal pdf"                                                                << std::endl;
+    hFile << "set output '" << filenameBase << extPDF << "'"                                   << std::endl;
+    hFile                                                                                      << std::endl;
+    hFile << "# =========================================================================== #" << std::endl;
+    hFile << "# plot dimensions"                                                               << std::endl;
+    hFile << "set xrange  [" 
+          << (std::isnan(xRangeMin) ? "*"s : std::to_string(xRangeMin))
+          << ":"
+          << (std::isnan(xRangeMax) ? "*"s : std::to_string(xRangeMax))
+          << "]"                                                                               << std::endl;
+    hFile << "set yrange  [" 
+          << (std::isnan(yRangeMin) ? "*"s : std::to_string(yRangeMin))
+          << ":"
+          << (std::isnan(yRangeMax) ? "*"s : std::to_string(yRangeMax))
+          << "]"                                                                               << std::endl;
+    hFile << "set cbrange  [" 
+          << (std::isnan(cRangeMin) ? "*"s : std::to_string(cRangeMin))
+          << ":"
+          << (std::isnan(cRangeMax) ? "*"s : std::to_string(cRangeMax))
+          << "]"                                                                               << std::endl;
+    hFile                                                                                      << std::endl;
+    hFile << "# =========================================================================== #" << std::endl;
+    hFile << "# plot format"                                                                   << std::endl;
+    hFile << "set palette defined ( 0 \"#000090\",\\"                                          << std::endl;
+    hFile << "                      1 \"#000fff\",\\"                                          << std::endl;
+    hFile << "                      2 \"#0090ff\",\\"                                          << std::endl;
+    hFile << "                      3 \"#0fffee\",\\"                                          << std::endl;
+    hFile << "                      4 \"#90ff70\",\\"                                          << std::endl;
+    hFile << "                      5 \"#ffee00\",\\"                                          << std::endl;
+    hFile << "                      6 \"#ff7000\",\\"                                          << std::endl;
+    hFile << "                      7 \"#ee0000\",\\"                                          << std::endl;
+    hFile << "                      8 \"#7f0000\")"                                            << std::endl;
+    hFile << "set key off"                                                                     << std::endl;
+    hFile << "set xlabel \"" << xLabel << "\""                                                 << std::endl;
+    hFile << "set ylabel \"" << yLabel << "\" rotate parallel"                                 << std::endl;
+    hFile                                                                                      << std::endl;
+    hFile << "# =========================================================================== #" << std::endl;
+    hFile << "# make plots"                                                                    << std::endl;
+    
+    if (hFile.bad()) {throw std::invalid_argument("File stream is not ready");}
+  };
+  
+  // ....................................................................... //
+  
+  void writeScript1D () const {
+    auto hFile = openThrow(filenameBase + extSCRIPT);
+    
+    hFile << generateFileComments(fileContentDescription);
+    
+    writeScript1DHead(hFile);
+    
+    hFile << "set title \"" << title << "\" offset 0, -1" << std::endl;
+    hFile << "plot '" << filenameBase << extGNU << "' u 1:" << dataColumnFormat1D << " with lines" << std::endl;
+    
+    hFile.close();
+  }
+  // ....................................................................... //
+  void writeScript2D () const {
+    auto hFile = openThrow(filenameBase + extSCRIPT);
+    
+    hFile << generateFileComments(fileContentDescription);
+    
+    writeScript2DHead(hFile);
+    
+    hFile << "set title \"" << title << "\" offset 0, -1" << std::endl;
+    hFile << "plot '" << filenameBase << extGNU << "' u 1:2:" << dataColumnFormat2D << " with image pixels" << std::endl;
+    
+    hFile.close();
+  }
+  
+  // ....................................................................... //
   
   void writeMultiScript1D(const std::vector<const std::string> & GNUfiles) const;
   void writeMultiScript2D(const std::vector<const std::string> & GNUfiles) const;

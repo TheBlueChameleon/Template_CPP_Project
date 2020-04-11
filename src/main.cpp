@@ -116,8 +116,11 @@ int main (int argc, char ** argv) {
   }
   
   FileWriter<int> FW(v);
+  
   FW.setCols(5);
-  FW.setYLabelValues({"a", "b", "c", "d", "e"});
+  FW.setXLabelValues({"1", "2", "3", "4", "5"});
+  FW.setYLabelValues({"1", "2", "3", "4", "5"});
   FW.writeTXT2D();
   FW.writeGNU2D();
+  FW.writeScript2D();
 }

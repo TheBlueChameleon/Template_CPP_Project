@@ -276,17 +276,11 @@ public:
     
     hFile << generateFileComments(fileContentDescription);
     
-    if (yLabelValues.size() >= 2) {
-      hFile << yLabelValues[0];
-      hFile << separatorTXT;
-      hFile << yLabelValues[1];
-      hFile << std::endl;
-    } else {
-      hFile << "x values";
-      hFile << separatorTXT;
-      hFile << "y values";
-      hFile << std::endl;
-    }
+    
+    hFile << xLabel;
+    hFile << separatorTXT;
+    hFile << yLabel;
+    hFile << std::endl;
     
     auto ID = 0u, row = 0u, col = 0u;
     
@@ -311,10 +305,11 @@ public:
     
     hFile << generateFileComments(fileContentDescription);
     
+    hFile << yLabel << "\\"  << xLabel;
     hFile << separatorTXT;
-    if ( yLabelValues.size() >= static_cast<unsigned>(cols) ) {
+    if ( xLabelValues.size() >= static_cast<unsigned>(cols) ) {
       for (auto i = 0; i < cols; ++i) {
-        hFile << yLabelValues[i];
+        hFile << xLabelValues[i];
         hFile << separatorTXT;
       }
       
@@ -330,7 +325,7 @@ public:
     
     for (const auto & datapoint : *const_cast<FileWriter*>(this) ) {
       if (col == 0) {
-        hFile << ( row >= xLabelValues.size() ? std::to_string(row) : xLabelValues[row] );
+        hFile << ( row >= yLabelValues.size() ? std::to_string(row) : yLabelValues[row] );
         hFile << separatorTXT;
       }
       
@@ -346,6 +341,78 @@ public:
     
     hFile.close();
   }
+  
+  // ....................................................................... //
+  
+  void writeGNU1D (const int colID = 0) const {
+    if (colID < 0) {
+      throw std::invalid_argument(
+        "Attempted to plot invalid column in "s + __PRETTY_FUNCTION__ + ".\n" +
+        "  column: " + std::to_string(colID)
+      );
+    }
+    
+    auto hFile = openThrow(filenameBase + extGNU);
+    
+    hFile << generateFileComments(fileContentDescription);
+    
+    hFile << "# ";
+    hFile << xLabel;
+    hFile << separatorTXT;
+    hFile << yLabel;
+    hFile << std::endl;
+    
+    auto ID = 0u, row = 0u, col = 0u;
+    
+    for (const auto & datapoint : *const_cast<FileWriter*>(this) ) {
+      if ( col == static_cast<unsigned>(colID) ) {
+        hFile << ( row >= xLabelValues.size() ? std::to_string(row) : xLabelValues[row] );
+        hFile << separatorTXT;
+        hFile << datapoint;
+        hFile << std::endl;
+      }
+      
+      ++ID;
+      row = ID / cols;
+      col = ID % cols;
+    }
+    
+    hFile.close();
+  }
+  // ....................................................................... //
+  void writeGNU2D () const {
+    auto hFile = openThrow(filenameBase + extGNU);
+    
+    hFile << generateFileComments(fileContentDescription);
+    
+    hFile << "# ";
+    hFile << xLabel;
+    hFile << separatorTXT;
+    hFile << yLabel;
+    hFile << separatorTXT;
+    hFile << "datapoint";
+    hFile << std::endl;
+    
+    auto ID = 0u, row = 0u, col = 0u;
+    
+    for (const auto & datapoint : *const_cast<FileWriter*>(this) ) {
+      hFile << ( col >= xLabelValues.size() ? "column_" + std::to_string(col) : xLabelValues[col] );
+      hFile << separatorTXT;
+      hFile << ( row >= yLabelValues.size() ? "row_"    + std::to_string(row) : yLabelValues[row] );
+      hFile << separatorTXT;
+      hFile << datapoint;
+      hFile << std::endl;
+      
+      ++ID;
+      row = ID / cols;
+      col = ID % cols;
+      if (!col) {hFile << std::endl;}   // graphically offset new lines in gnu data files.
+    }
+    
+    hFile.close();
+  }
+  
+  // ....................................................................... //
   
   void writeScript1D () const;
   void writeScript2D () const;

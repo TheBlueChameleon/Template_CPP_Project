@@ -14,14 +14,12 @@
 
 // own
 #include "globals.hpp"
+#include "fileWriter.hpp"
 
 // ========================================================================= //
 // proc
 
-int main (int argc, char ** argv) {
-  // ======================================================================= //
-  // read settings
-  
+void describeSettingsFile() {
   SettingsElementDescriptor SED;
   std::vector<SettingsElementDescriptor> vSED;
   
@@ -73,6 +71,32 @@ int main (int argc, char ** argv) {
   
   globalSettings = Settings(vSED);
   globalSettings.saveFile("defaults.ini");
+}
+
+void testSettingsFile () {
+  
+  std::cout << vector_to_string( globalSettings.getKeywords() ) << std::endl;
+  
+  std::cout << std::endl;
+  std::cout << globalSettings.getIndex("BOOLEAN1") << std::endl;
+  std::cout << globalSettings.getIndex("BOOLEAN2") << std::endl;
+  std::cout << globalSettings.getIndex("BOOLEAN7") << std::endl;
+  
+  std::cout << globalSettings.getValue<bool>(0) << std::endl;
+  std::cout << globalSettings.getValue<bool>("boolean3") << std::endl;
+  std::cout << vector_to_string( globalSettings.getValue< std::vector<double> >("dbllist") ) << std::endl;
+  
+  std::cout << globalSettings.contains("StrList", "maketxt") << std::endl;
+  std::cout << globalSettings.contains("StrList", "MAKETXT") << std::endl;
+  std::cout << globalSettings.contains("StrList", "not at all") << std::endl;
+}
+// ========================================================================= //
+// main
+
+int main (int argc, char ** argv) {
+  // ======================================================================= //
+  // read settings
+  
   init(argc, argv);
   
   std::cout << globalSettings.to_string();
@@ -82,18 +106,9 @@ int main (int argc, char ** argv) {
   std::cout << "main done." << std::endl;
   std::cout << std::endl;
   
-//   std::cout << vector_to_string( globalSettings.getKeywords() ) << std::endl;
+  std::vector<int> v = {1,2,3,4,5};
   
-//   std::cout << std::endl;
-//   std::cout << globalSettings.getIndex("BOOLEAN1") << std::endl;
-//   std::cout << globalSettings.getIndex("BOOLEAN2") << std::endl;
-//   std::cout << globalSettings.getIndex("BOOLEAN7") << std::endl;
+  FileWriter<int> FW(v);
   
-//   std::cout << globalSettings.getValue<bool>(0) << std::endl;
-//   std::cout << globalSettings.getValue<bool>("boolean3") << std::endl;
-//   std::cout << vector_to_string( globalSettings.getValue< std::vector<double> >("dbllist") ) << std::endl;
-  
-  std::cout << globalSettings.contains("StrList", "maketxt") << std::endl;
-  std::cout << globalSettings.contains("StrList", "MAKETXT") << std::endl;
-  std::cout << globalSettings.contains("StrList", "not at all") << std::endl;
+  FW.show();
 }

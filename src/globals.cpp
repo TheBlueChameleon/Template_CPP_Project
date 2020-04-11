@@ -48,13 +48,11 @@ void init([[maybe_unused]] int argc,
   globalSettings.loadFile(argv[1]);
   std::cout << "   done." << std::endl;
   
+//   consoleSetcolor(ConsoleColors::FORE_YELLOW);
+//   std::cout << "Generic Comment" << std::endl;
+//   consoleSetcolor(ConsoleColors::SPC_NORMAL);
   
-  consoleSetcolor(ConsoleColors::FORE_YELLOW);
-  std::cout << "Generic Comment" << std::endl;
-  consoleSetcolor(ConsoleColors::SPC_NORMAL);
-  
-  
-  std::cout << std::endl;
+  std::cout << "Ready." << std::endl << std::endl;
 }
 
 // ========================================================================= //

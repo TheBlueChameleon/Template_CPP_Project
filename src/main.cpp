@@ -115,6 +115,7 @@ int main (int argc, char ** argv) {
   
   FileWriter<int> FW(v);
   FW.setCols(5);
-  FW.setYLabelValues({"a", "b"});
-  FW.writeTXT1D(1);
+  FW.setYLabelValues({"a", "b", "c", "d", "e"});
+  // FW.writeTXT1D(1);
+  FW.writeTXT2D();
 }

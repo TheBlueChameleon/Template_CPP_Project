@@ -306,7 +306,46 @@ public:
     hFile.close();
   }
   // ....................................................................... //
-  void writeTXT2D () const;
+  void writeTXT2D () const {
+    auto hFile = openThrow(filenameBase + extTXT);
+    
+    hFile << generateFileComments(fileContentDescription);
+    
+    hFile << separatorTXT;
+    if ( yLabelValues.size() >= static_cast<unsigned>(cols) ) {
+      for (auto i = 0; i < cols; ++i) {
+        hFile << yLabelValues[i];
+        hFile << separatorTXT;
+      }
+      
+    } else {
+      for (auto i = 0; i < cols; ++i) {
+        hFile << "column " << i;
+        hFile << separatorTXT;
+      }
+    }
+    hFile << std::endl;
+    
+    auto ID = 0u, row = 0u, col = 0u;
+    
+    for (const auto & datapoint : *const_cast<FileWriter*>(this) ) {
+      if (col == 0) {
+        hFile << ( row >= xLabelValues.size() ? std::to_string(row) : xLabelValues[row] );
+        hFile << separatorTXT;
+      }
+      
+      hFile << datapoint;
+      hFile << separatorTXT;
+      
+      ++ID;
+      row = ID / cols;
+      col = ID % cols;
+      
+      if (col == 0) {hFile << std::endl;}
+    }
+    
+    hFile.close();
+  }
   
   void writeScript1D () const;
   void writeScript2D () const;

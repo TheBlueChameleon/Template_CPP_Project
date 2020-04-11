@@ -106,9 +106,15 @@ int main (int argc, char ** argv) {
   std::cout << "main done." << std::endl;
   std::cout << std::endl;
   
-  std::vector<int> v = {1,2,3,4,5};
+  std::vector<int> v(25);
+  for   (auto r = 0; r < 5; ++r) {
+    for (auto c = 0; c < 5; ++c) {
+      v[5 * r + c] = 3 - r + c;
+    }
+  }
   
   FileWriter<int> FW(v);
-  
-  FW.show();
+  FW.setCols(5);
+  FW.setYLabelValues({"a", "b"});
+  FW.writeTXT1D(1);
 }

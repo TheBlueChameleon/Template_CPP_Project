@@ -15,6 +15,7 @@
 #include <fstream>
 
 #include <string>
+  using namespace std::string_literals;
 #include <vector>
 #include <iterator>
 
@@ -46,12 +47,14 @@ private:
   char separatorTXT = '\t';
   char separatorGNU = '\t';
   
-  std::string filenameBase;
-  std::string extTXT    = ".txt";
-  std::string extGNU    = ".dat";
-  std::string extTEX    = ".tex";
-  std::string extPDF    = ".pdf";
-  std::string extSCRIPT = ".gnuscript";
+  std::string filenameBase = "./FileWriterOutput";
+  std::string extTXT       = ".txt";
+  std::string extGNU       = ".dat";
+  std::string extTEX       = ".tex";
+  std::string extPDF       = ".pdf";
+  std::string extSCRIPT    = ".gnuscript";
+  
+  std::string fileContentDescription = "FileWriter Output";
   
   bool autoRunScript = true;
   bool standaloneTEX = true;
@@ -59,7 +62,7 @@ private:
   // ....................................................................... //
   // form parameters
   
-  int cols = -1;
+  int cols = 1;
   
   std::string title;
   std::string xLabel = "x";
@@ -120,7 +123,7 @@ public:
   void                setFilenameBase (const std::string & val) {
     if (val.find_first_of(invalidFilenameChars) != std::string::npos) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename base in " + __PRETTY_FUNCTION__ + ".\n" +
+        "Attempted to set invalid filename base in "s + __PRETTY_FUNCTION__ + ".\n" +
         "  filenameBase        : '" + val + "'\n" +
         "  forbidden characters: " + invalidFilenameChars
       );
@@ -132,7 +135,7 @@ public:
   void                setExtTXT       (const std::string & val) {
     if (val.find_first_of(invalidFilenameChars) != std::string::npos) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename base in " + __PRETTY_FUNCTION__ + ".\n" +
+        "Attempted to set invalid filename in "s + __PRETTY_FUNCTION__ + ".\n" +
         "  extTXT              : '" + val + "'\n" +
         "  forbidden characters: " + invalidFilenameChars
       );
@@ -144,7 +147,7 @@ public:
   void                setExtGNU       (const std::string & val) {
     if (val.find_first_of(invalidFilenameChars) != std::string::npos) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename base in " + __PRETTY_FUNCTION__ + ".\n" +
+        "Attempted to set invalid filename in "s + __PRETTY_FUNCTION__ + ".\n" +
         "  extGNU              : '" + val + "'\n" +
         "  forbidden characters: " + invalidFilenameChars
       );
@@ -156,7 +159,7 @@ public:
   void                setExtTEX       (const std::string & val) {
     if (val.find_first_of(invalidFilenameChars) != std::string::npos) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename base in " + __PRETTY_FUNCTION__ + ".\n" +
+        "Attempted to set invalid filename in "s + __PRETTY_FUNCTION__ + ".\n" +
         "  extTEX              : '" + val + "'\n" +
         "  forbidden characters: " + invalidFilenameChars
       );
@@ -168,7 +171,7 @@ public:
   void                setExtSCRIPT    (const std::string & val) {
     if (val.find_first_of(invalidFilenameChars) != std::string::npos) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename base in " + __PRETTY_FUNCTION__ + ".\n" +
+        "Attempted to set invalid filename in "s + __PRETTY_FUNCTION__ + ".\n" +
         "  extSCRIPT           : '" + val + "'\n" +
         "  forbidden characters: " + invalidFilenameChars
       );
@@ -180,13 +183,16 @@ public:
   void                setExtPDF       (const std::string & val) {
     if (val.find_first_of(invalidFilenameChars) != std::string::npos) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename base in " + __PRETTY_FUNCTION__ + ".\n" +
+        "Attempted to set invalid filename in "s + __PRETTY_FUNCTION__ + ".\n" +
         "  extPDF              : '" + val + "'\n" +
         "  forbidden characters: " + invalidFilenameChars
       );
       
     } else {extPDF = val;}
   }
+  // ....................................................................... //
+  const std::string & getFileContentDescription() const {return fileContentDescription;}
+  void                setFileContentDescription(std::string & val) {fileContentDescription = val;}
   // ....................................................................... //
   bool                getAutoRunScript() const                  {return autoRunScript;}
   void                setAutoRunScript(bool val)                {autoRunScript = val;}
@@ -198,29 +204,31 @@ public:
   
   int                              getCols              () const {return cols;}
   void                             setCols              (int val) {
-    if (val < 0) {
+    if (val < 1) {
       throw std::invalid_argument(
-        "Attempted to set invalid filename base in " + __PRETTY_FUNCTION__ + ".\n" +
-        "  cols: " + val
+        "Attempted to set invalid column in "s + __PRETTY_FUNCTION__ + ".\n" +
+        "  cols: " + std::to_string(val)
       );
     }
     cols = val;
   }
   // ....................................................................... //
   const std::string &              getTitle             () const {return title;}
-  void                             setTitle             (const std::string & val);
+  void                             setTitle             (const std::string & val) {title = val;}
   // ....................................................................... //
   const std::string &              getXLabel            () const {return xLabel;}
-  void                             setXLabel            (const std::string & val);
+  void                             setXLabel            (const std::string & val) {xLabel = val;}
   // ....................................................................... //
   const std::string &              getYLabel            () const {return yLabel;}
-  void                             setYLabel            (const std::string & val);
+  void                             setYLabel            (const std::string & val) {yLabel = val;}
   // ....................................................................... //
   const std::vector<std::string> & getXLabelValues      () const {return xLabelValues;}
-  void                             setXLabelValues      (const std::vector<std::string> & val);
+  void                             setXLabelValues      (const std::vector<std::string> &  val) {xLabelValues = val;}
+  void                             setXLabelValues      (const std::vector<std::string> && val) {xLabelValues = val;}
   // ....................................................................... //
   const std::vector<std::string> & getYLabelValues      () const {return yLabelValues;}
-  void                             setYLabelValues      (const std::vector<std::string> & val);
+  void                             setYLabelValues      (const std::vector<std::string> &  val) {yLabelValues = val;}
+  void                             setYLabelValues      (const std::vector<std::string> && val) {yLabelValues = val;}
   // ....................................................................... //
   double                           getXRangeMin         () const {return xRangeMin;}
   void                             setXRangeMin         (double val) {xRangeMin = val;}
@@ -256,7 +264,48 @@ public:
   // ----------------------------------------------------------------------- //
   // writers
   
-  void writeTXT1D () const;
+  void writeTXT1D (const int colID = 0) const {
+    if (colID < 0) {
+      throw std::invalid_argument(
+        "Attempted to plot invalid column in "s + __PRETTY_FUNCTION__ + ".\n" +
+        "  column: " + std::to_string(colID)
+      );
+    }
+    
+    auto hFile = openThrow(filenameBase + extTXT);
+    
+    hFile << generateFileComments(fileContentDescription);
+    
+    if (yLabelValues.size() >= 2) {
+      hFile << yLabelValues[0];
+      hFile << separatorTXT;
+      hFile << yLabelValues[1];
+      hFile << std::endl;
+    } else {
+      hFile << "x values";
+      hFile << separatorTXT;
+      hFile << "y values";
+      hFile << std::endl;
+    }
+    
+    auto ID = 0u, row = 0u, col = 0u;
+    
+    for (const auto & datapoint : *const_cast<FileWriter*>(this) ) {
+      if ( col == static_cast<unsigned>(colID) ) {
+        hFile << ( row >= xLabelValues.size() ? std::to_string(row) : xLabelValues[row] );
+        hFile << separatorTXT;
+        hFile << datapoint;
+        hFile << std::endl;
+      }
+      
+      ++ID;
+      row = ID / cols;
+      col = ID % cols;
+    }
+    
+    hFile.close();
+  }
+  // ....................................................................... //
   void writeTXT2D () const;
   
   void writeScript1D () const;
@@ -268,11 +317,7 @@ public:
   // ----------------------------------------------------------------------- //
   // misc
   
-  void show() {
-    for (auto x : *this) {std::cout << x << std::endl;}
-  }
-  
-  
+  std::string to_string() const;
 };
 
 #endif

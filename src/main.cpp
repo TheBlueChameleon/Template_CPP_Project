@@ -110,9 +110,7 @@ int main (int argc, char ** argv) {
   for   (auto r = 0; r < 5; ++r) {
     for (auto c = 0; c < 5; ++c) {
       v[5 * r + c] = 3 - r + c;
-      std::cout << v[5 * r + c] << "\t";
     }
-      std::cout << std::endl;
   }
   
   FileWriter<int> FW(v);
@@ -123,4 +121,6 @@ int main (int argc, char ** argv) {
   FW.writeTXT2D();
   FW.writeGNU2D();
   FW.writeScript2D();
+  
+  std::cout << FW.to_string() << std::endl;
 }

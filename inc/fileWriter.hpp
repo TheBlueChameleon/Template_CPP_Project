@@ -570,7 +570,18 @@ public:
   // ----------------------------------------------------------------------- //
   // misc
   
-  std::string to_string() const;
+  std::string to_string() const {
+    std::string reVal = "File Writer object\n";
+    
+    reVal += "\thas data points: "s + (empty() ? "no" : "yes") + "\n";
+    reVal += "\t#data points:    "s + std::to_string(size()) + "\n";
+    reVal += "\t#columns:        "s + std::to_string(cols) + "\n";
+    reVal += "\ttitle:           "s + title + "\n";
+    reVal += "\tx-label          "s + xLabel + "\n";
+    reVal += "\ty-label          "s + yLabel + "\n";
+    
+    return reVal;
+  }
 };
 
 #endif

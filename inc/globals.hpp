@@ -204,7 +204,7 @@ bool wildcardmatch(const std::string & pattern, const std::string & searchstring
 // https://stackoverflow.com/questions/3177241/what-is-the-best-way-to-concatenate-two-vectors
 
 template<class T>
-static inline std::vector<T> concatenate (std::vector<T> & A, std::vector<T> & B) {
+static inline std::vector<T> concatenate (const std::vector<T> & A, const std::vector<T> & B) {
   std::vector<T> reVal;
   
   reVal.insert( reVal.end(), A.begin(), A.end() );
@@ -214,9 +214,7 @@ static inline std::vector<T> concatenate (std::vector<T> & A, std::vector<T> & B
 }
 // ......................................................................... //
 template<class T>
-static inline void appendTo_vector (std::vector<T> & A, std::vector<T> & B) {
-  std::vector<T> reVal = std::vector<T>(A.size() + B.size());
-  
+static inline void appendTo_vector (std::vector<T> & A, const std::vector<T> & B) {
   A.reserve( A.size() + B.size() );
   A.insert ( A.end(), B.begin(), B.end() );
 }

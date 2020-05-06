@@ -69,6 +69,7 @@ private:
   
   std::vector<std::string> xLabelValues;
   std::vector<std::string> yLabelValues;
+  std::vector<std::string> cLabelValues;
   
   double xRangeMin = 0;
   double xRangeMax = std::nan("inf");
@@ -229,6 +230,11 @@ public:
   const std::vector<std::string> & getYLabelValues      () const {return yLabelValues;}
   void                             setYLabelValues      (const std::vector<std::string> &  val) {yLabelValues = val;}
   void                             setYLabelValues      (const std::vector<std::string> && val) {yLabelValues = val;}
+  // ....................................................................... //
+  const std::vector<std::string> & getCLabelValues      () const {return cLabelValues;}
+  void                             setCLabelValues      (const std::vector<std::string> &  val) {cLabelValues = val;}
+  void                             setCLabelValues      (const std::vector<std::string> && val) {cLabelValues = val;}
+  void                           resetCLabelValues      () {cLabelValues.clear();}
   // ....................................................................... //
   double                           getXRangeMin         () const {return xRangeMin;}
   void                             setXRangeMin         (double val) {xRangeMin = val;}
@@ -446,6 +452,19 @@ public:
     hFile << "set xlabel \"" << xLabel << "\""                                                 << std::endl;
     hFile << "set ylabel \"" << yLabel << "\" rotate parallel"                                 << std::endl;
     hFile                                                                                      << std::endl;
+    if ( cLabelValues.size() ) {
+      hFile << "set ytics (";
+      int cLabelCounter = 0;
+      std::for_each(cLabelValues.begin(), cLabelValues.end(),
+        [&cLabelCounter, &hFile] (const auto & lblText) {
+          hFile << "\"" << lblText << "\" " << cLabelCounter << ", ";
+          ++cLabelCounter;
+        }
+      );
+      hFile.seekp(-2, std::ios_base::cur);
+      hFile << ")" << std::endl;
+    }
+    hFile                                                                                      << std::endl;
     hFile << "# =========================================================================== #" << std::endl;
     hFile << "# make plots"                                                                    << std::endl;
     
@@ -491,6 +510,19 @@ public:
     hFile << "set key off"                                                                     << std::endl;
     hFile << "set xlabel \"" << xLabel << "\""                                                 << std::endl;
     hFile << "set ylabel \"" << yLabel << "\" rotate parallel"                                 << std::endl;
+    hFile                                                                                      << std::endl;
+    if ( cLabelValues.size() ) {
+      hFile << "set cbtics (";
+      int cLabelCounter = 0;
+      std::for_each(cLabelValues.begin(), cLabelValues.end(),
+        [&cLabelCounter, &hFile] (const auto & lblText) {
+          hFile << "\"" << lblText << "\" " << cLabelCounter << ", ";
+          ++cLabelCounter;
+        }
+      );
+      hFile.seekp(-2, std::ios_base::cur);
+      hFile << ")" << std::endl;
+    }
     hFile                                                                                      << std::endl;
     hFile << "# =========================================================================== #" << std::endl;
     hFile << "# make plots"                                                                    << std::endl;

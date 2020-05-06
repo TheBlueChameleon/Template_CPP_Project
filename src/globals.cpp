@@ -14,6 +14,7 @@
 
 
 // own
+#include "settings.hpp"
 #include "globals.hpp"
 
 // ========================================================================= //
@@ -30,29 +31,28 @@ Settings globalSettings;
 void init([[maybe_unused]] int argc, 
           [[maybe_unused]] char ** argv
 ) {
-  
   ConsoleColorsTriple headColor = {ConsoleColors::FORE_GREEN};
-  coutHeadline("CPP UTILITIES CHECK", headColor);
+  coutHeadline("PHASE RETRIEVAL ALGORITHM", headColor);
   
-  if (argc > 1) {std::cout << "Attempting to parse '" << argv[1] << "'" << std::endl;}
-  else          {std::cout << "Please provide a file pattern of PRA phaselist txt files." << std::endl; std::exit(1);}
-  
-  std::cout << "Initializing ..." << std::endl;
+  std::cout << "Initializing algorithm..." << std::endl;
   
   std::cout << "   setting up RNG ..." << std::endl;
   rand_phase_distribution = std::uniform_real_distribution<>(0.0, 6.28);
   std::cout << "   done." << std::endl;
   
+  if (argc > 1) {
+    std::cout << "   Attempting to parse '" << argv[1] << "'" << std::endl;
+    globalSettings.loadFile( argv[1] );
+  } else {
+    std::cout << "   No settings file was specified. Falling back to defaults." << std::endl;
+    std::cout << "   Note: You may specify a settings file as the first command line parameter." << std::endl;
+  }
   
-  std::cout << "   reading settings file ..." << std::endl;
-  globalSettings.loadFile(argv[1]);
-  std::cout << "   done." << std::endl;
+  std::cout << "done." << std::endl;
   
-//   consoleSetcolor(ConsoleColors::FORE_YELLOW);
-//   std::cout << "Generic Comment" << std::endl;
-//   consoleSetcolor(ConsoleColors::SPC_NORMAL);
-  
-  std::cout << "Ready." << std::endl << std::endl;
+  std::cout << "Ready to run with the following settings:" << std::endl;
+  std::cout << globalSettings.to_string() << std::endl;
+  std::cout << std::endl;
 }
 
 // ========================================================================= //
@@ -126,7 +126,6 @@ void utterWarning (const std::string & text,
                                  const ConsoleColorsTriple & headlineColors,
                                  const ConsoleColorsTriple &     textColors
 ) {
-  
   if ( (indentFirst < 0) || (indentHanging < 0) ) {
     std::string errText = "Invalid argument in ";
     errText += __PRETTY_FUNCTION__;
@@ -180,11 +179,13 @@ void coutHeadline ( const std::string & text,
   
   consoleSetcolor(ConsoleColors::SPC_NORMAL);
 }
+
 // ========================================================================= //
 // String utility
 
 std::vector<std::string> splitString(const std::string & s, const char separator) {
   std::vector<std::string> reVal;
+  if ( s.empty() ) {return reVal;}
   
   auto posSeparator = s.find(separator);
   auto last = 0u;
@@ -213,6 +214,7 @@ bool wildcardmatch(const char *first, const char * second) {
   return false; 
 }
 bool wildcardmatch(const std::string & pattern, const std::string & searchstring) {return wildcardmatch(pattern.c_str(), searchstring.c_str());}
+
 
 // ========================================================================= //
 // File utility

@@ -220,6 +220,31 @@ static inline void appendTo_vector (std::vector<T> & A, const std::vector<T> & B
 }
 
 // ------------------------------------------------------------------------- //
+// flatten vectors of vectors
+// adapted from https://stackoverflow.com/questions/17294629/merging-flattening-sub-vectors-into-a-single-vector-c-converting-2d-to-1d
+
+template <typename T>
+std::vector<T> flatten(const std::vector<std::vector<T>> & v) {
+    std::size_t totalSize = std::accumulate(
+      v.begin(), v.end(),
+      0u,
+      [] (const auto & acc, const auto & elm) {return acc + elm.size();}
+    );
+    
+    std::vector<T> reVal(totalSize);
+    reVal.reserve();
+    std::for_each(v.begin(), v.end(),
+                  [reVal] (const auto & elm) {
+                    reVal.insert(reVal.end(), 
+                                 elm.begin(), elm.end()
+                                );
+                  }
+    );
+    
+    return reVal;
+}
+
+// ------------------------------------------------------------------------- //
 // show lists of lists Py-Style
 
 template<class T> 
@@ -303,9 +328,8 @@ static inline std::string  generateFileComments(const std::string & content) {
   std::string reVal;
   
   reVal += "# =========================================================================== #\n";
-  if ( content.size() ) {
-    reVal += "# " +  content + "\n";
-  }
+  auto lines = splitString(content);
+  for (const auto & line : lines) {reVal += "# " + line + "\n";}
   reVal += "# timestamp: ";
   reVal +=    generateTimestamp() + "\n";
   reVal += "# =========================================================================== #\n\n";

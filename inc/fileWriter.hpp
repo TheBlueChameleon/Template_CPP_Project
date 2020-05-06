@@ -32,7 +32,7 @@ private:
   // ....................................................................... //
   // behaviour objects
   
-  static constexpr char invalidFilenameChars[] = "*~[]|:;,<> '\"";
+  std::string invalidFilenameChars = "*~|:;<> '\"";
   
   // ....................................................................... //
   // data source
@@ -110,6 +110,9 @@ public:
   // ----------------------------------------------------------------------- //
   // getter / setter
   
+  const std::string & getInvalidFilenameChars () const                   {return invalidFilenameChars;}
+  void                setInvalidFilenameChars  (const std::string & val) {invalidFilenameChars = val;}
+  // ....................................................................... //
   char                getSeparatorTXT () const                  {return separatorTXT;}
   void                setSeparatorTXT (char val)                {separatorTXT = val;}
   // ....................................................................... //
@@ -189,7 +192,7 @@ public:
   }
   // ....................................................................... //
   const std::string & getFileContentDescription() const {return fileContentDescription;}
-  void                setFileContentDescription(std::string & val) {fileContentDescription = val;}
+  void                setFileContentDescription(const std::string & val) {fileContentDescription = val;}
   // ....................................................................... //
   bool                getAutoRunScript() const                  {return autoRunScript;}
   void                setAutoRunScript(bool val)                {autoRunScript = val;}
@@ -411,6 +414,12 @@ public:
   
   // ....................................................................... //
   
+  void writeTEX1D ([[maybe_unused]] const int colID = 0) const {std::cout << "TEX writer not yet implemented" << std::endl;}
+  // ....................................................................... //
+  void writeTEX2D () const {std::cout << "TEX writer not yet implemented" << std::endl;}
+  
+  // ....................................................................... //
+  
   void writeScript1DHead (std::ostream & hFile) const {
     hFile << "# =========================================================================== #" << std::endl;
     hFile << "# output format"                                                                 << std::endl;
@@ -555,6 +564,14 @@ public:
     
     hFile.close();
     if (autoRunScript) {runScript();}
+  }
+  
+  // ....................................................................... //
+  
+  void writeMock () const {
+    auto hFile = openThrow(filenameBase + extTXT);
+    hFile << generateFileComments(fileContentDescription);
+    hFile.close();
   }
   
   // ....................................................................... //

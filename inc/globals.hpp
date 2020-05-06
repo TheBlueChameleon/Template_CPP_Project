@@ -328,7 +328,7 @@ static inline std::string  generateFileComments(const std::string & content) {
   std::string reVal;
   
   reVal += "# =========================================================================== #\n";
-  auto lines = splitString(content);
+  auto lines = splitString(content, "\n");
   for (const auto & line : lines) {reVal += "# " + line + "\n";}
   reVal += "# timestamp: ";
   reVal +=    generateTimestamp() + "\n";

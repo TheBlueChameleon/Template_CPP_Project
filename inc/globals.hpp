@@ -327,11 +327,15 @@ Iterator findNearby(Iterator begin, Iterator end,
 }
 // ......................................................................... //
 template<class Iterator, class T>
-size_t findNearbyIdx(Iterator begin, Iterator end, 
+int findNearbyIdx(Iterator begin, Iterator end, 
                     const T & val,
                     double epsilon,
                     double absFunc (double) = std::abs
-) {return std::distance(begin, findNearby(begin, end, val, epsilon, absFunc) );}
+) {
+  auto spot = findNearby(begin, end, val, epsilon, absFunc);
+  if (spot == end) {return -1;}
+  else             {return std::distance(begin, spot);}
+}
 
 // ========================================================================= //
 // File utilty

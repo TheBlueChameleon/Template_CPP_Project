@@ -309,6 +309,30 @@ double vector_distance(const std::vector<T> & A, const std::vector<T> & B) {
   );
 }
 
+// ------------------------------------------------------------------------- //
+// find nearby
+
+template<class Iterator, class T>
+Iterator findNearby(Iterator begin, Iterator end, 
+                    const T & val,
+                    double epsilon,
+                    double absFunc (double) = std::abs
+) {
+  auto it = begin;
+  for (; it != end; ++it) {
+    if (absFunc(*it - val) < epsilon) {break;}
+  }
+  
+  return it;
+}
+// ......................................................................... //
+template<class Iterator, class T>
+size_t findNearbyIdx(Iterator begin, Iterator end, 
+                    const T & val,
+                    double epsilon,
+                    double absFunc (double) = std::abs
+) {return std::distance(begin, findNearby(begin, end, val, epsilon, absFunc) );}
+
 // ========================================================================= //
 // File utilty
 
@@ -328,7 +352,7 @@ static inline std::string  generateFileComments(const std::string & content) {
   std::string reVal;
   
   reVal += "# =========================================================================== #\n";
-  auto lines = splitString(content, "\n");
+  auto lines = splitString(content, '\n');
   for (const auto & line : lines) {reVal += "# " + line + "\n";}
   reVal += "# timestamp: ";
   reVal +=    generateTimestamp() + "\n";
